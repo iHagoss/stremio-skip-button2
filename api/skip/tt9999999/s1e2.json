@@ -1,0 +1,12 @@
+{
+  "imdbId": "tt9999999",
+  "season": 1,
+  "episode": 2,
+  "intro": { "start": 0.030, "end": 0.070 },
+  "recap": { "start": 0.000, "end": 0.025 },
+  "duration": 3600,
+  "skips": [
+    { "start": 25, "end": 85, "reason": "intro" },
+    { "start": 1200, "end": 1215, "reason": "recap" }
+  ]
+}
