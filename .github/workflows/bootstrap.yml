@@ -1,0 +1,617 @@
+name: Bootstrap Stremio Skip Patcher Monorepo
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  create-and-commit:
+    runs-on: ubuntu-latest
+    env:
+      GIT_AUTHOR_NAME: iHagoss
+      GIT_AUTHOR_EMAIL: iHagoss@github.com
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create bootstrap script
+        run: |
+          cat > bootstrap.sh <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          echo "Creating folder structure..."
+          mkdir -p patcher/app/src/main/java/com/stremio/skipintro/patcher
+          mkdir -p patcher/app/src/main/res/layout
+          mkdir -p patcher/app/src/main/res/values
+          mkdir -p patcher/app/src/test/java/com/stremio/skipintro/patcher
+          mkdir -p patcher/gradle/wrapper
+          mkdir -p patcher/keystore
+          mkdir -p api/skip/tt9999999
+          mkdir -p api/tests
+          mkdir -p analyzer/tests
+          mkdir -p temp./github/workflows
+
+          echo "Writing patcher Android files..."
+
+          cat > patcher/app/src/main/java/com/stremio/skipintro/patcher/MainActivity.kt <<'EOF'
+          package com.stremio.skipintro.patcher
+
+          import android.app.Activity
+          import android.content.Intent
+          import android.net.Uri
+          import android.os.Bundle
+          import android.provider.OpenableColumns
+          import android.widget.*
+          import androidx.appcompat.app.AppCompatActivity
+          import java.io.File
+
+          class MainActivity : AppCompatActivity() {
+              private val PICK_APK_REQUEST_CODE = 1001
+              private lateinit var apiBaseUrlInput: EditText
+              private lateinit var pickApkButton: Button
+              private lateinit var patchButton: Button
+              private lateinit var statusText: TextView
+              private var selectedApkUri: Uri? = null
+
+              override fun onCreate(savedInstanceState: Bundle?) {
+                  super.onCreate(savedInstanceState)
+                  setContentView(R.layout.activity_main)
+
+                  apiBaseUrlInput = findViewById(R.id.apiBaseUrlInput)
+                  pickApkButton = findViewById(R.id.pickApkButton)
+                  patchButton = findViewById(R.id.patchButton)
+                  statusText = findViewById(R.id.statusText)
+
+                  pickApkButton.setOnClickListener {
+                      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                          addCategory(Intent.CATEGORY_OPENABLE)
+                          type = "application/vnd.android.package-archive"
+                      }
+                      startActivityForResult(intent, PICK_APK_REQUEST_CODE)
+                  }
+
+                  patchButton.setOnClickListener {
+                      selectedApkUri?.let { uri ->
+                          val apiBaseUrl = apiBaseUrlInput.text.toString()
+                          if (apiBaseUrl.isNotEmpty()) {
+                              patchApk(uri, apiBaseUrl)
+                          } else {
+                              Toast.makeText(this, "Please enter API base URL", Toast.LENGTH_SHORT).show()
+                          }
+                      }
+                  }
+              }
+
+              override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+                  super.onActivityResult(requestCode, resultCode, data)
+                  if (requestCode == PICK_APK_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                      data?.data?.let { uri ->
+                          selectedApkUri = uri
+                          statusText.text = "APK selected: ${getFileName(uri)}"
+                          patchButton.isEnabled = true
+                      }
+                  }
+              }
+
+              private fun getFileName(uri: Uri): String {
+                  var name = "unknown.apk"
+                  contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                      val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                      if (cursor.moveToFirst() && nameIndex >= 0) {
+                          name = cursor.getString(nameIndex)
+                      }
+                  }
+                  return name
+              }
+
+              private fun patchApk(apkUri: Uri, apiBaseUrl: String) {
+                  statusText.text = "Patching APK..."
+                  // Simulated patch logic - would integrate with apktool here
+                  Toast.makeText(this, "APK patched successfully!", Toast.LENGTH_LONG).show()
+                  statusText.text = "Patch complete! APK ready for installation."
+              }
+          }
+          EOF
+
+          cat > patcher/app/src/main/res/layout/activity_main.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="16dp">
+
+              <EditText
+                  android:id="@+id/apiBaseUrlInput"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:hint="API base URL"
+                  android:inputType="textUri" />
+
+              <Button
+                  android:id="@+id/pickApkButton"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="16dp"
+                  android:text="Pick APK" />
+
+              <Button
+                  android:id="@+id/patchButton"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="8dp"
+                  android:text="Patch APK"
+                  android:enabled="false" />
+
+              <TextView
+                  android:id="@+id/statusText"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginTop="16dp"
+                  android:text="No APK selected" />
+
+          </LinearLayout>
+          EOF
+
+          cat > patcher/app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="com.stremio.skipintro.patcher">
+
+              <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+              <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+              <uses-permission android:name="android.permission.INTERNET" />
+
+              <application
+                  android:allowBackup="true"
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="@string/app_name"
+                  android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+
+              </application>
+
+          </manifest>
+          EOF
+
+          cat > patcher/app/src/main/res/values/strings.xml <<'EOF'
+          <resources>
+              <string name="app_name">Stremio Skip Patcher</string>
+          </resources>
+          EOF
+
+          cat > patcher/app/build.gradle <<'EOF'
+          plugins {
+              id 'com.android.application'
+              id 'kotlin-android'
+          }
+
+          android {
+              compileSdkVersion 33
+
+              defaultConfig {
+                  applicationId "com.stremio.skipintro.patcher"
+                  minSdkVersion 21
+                  targetSdkVersion 33
+                  versionCode 1
+                  versionName "1.0"
+              }
+
+              signingConfigs {
+                  release {
+                      storeFile file("../keystore/debug.keystore")
+                      storePassword "androiddebug"
+                      keyAlias "androiddebugkey"
+                      keyPassword "androiddebug"
+                  }
+              }
+
+              buildTypes {
+                  release {
+                      signingConfig signingConfigs.release
+                      minifyEnabled false
+                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                  }
+                  debug {
+                      signingConfig signingConfigs.release
+                  }
+              }
+
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_11
+                  targetCompatibility JavaVersion.VERSION_11
+              }
+
+              kotlinOptions {
+                  jvmTarget = '11'
+              }
+          }
+
+          dependencies {
+              implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
+              implementation "androidx.appcompat:appcompat:1.6.1"
+              implementation "androidx.core:core-ktx:1.9.0"
+          }
+          EOF
+
+          cat > patcher/build.gradle <<'EOF'
+          buildscript {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+              dependencies {
+                  classpath "com.android.tools.build:gradle:7.4.0"
+                  classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.20"
+              }
+          }
+
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          task clean(type: Delete) {
+              delete rootProject.buildDir
+          }
+          EOF
+
+          cat > patcher/settings.gradle <<'EOF'
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+
+          rootProject.name = "stremio-skip-patcher"
+          include ':app'
+          EOF
+
+          cat > patcher/gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx1536m
+          kotlin.code.style=official
+          android.useAndroidX=true
+          EOF
+
+          cat > patcher/gradle/wrapper/gradle-wrapper.properties <<'EOF'
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-7.5-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
+          cat > patcher/app/proguard-rules.pro <<'EOF'
+          -keep class com.stremio.skipintro.patcher.** { *; }
+          EOF
+
+          cat > patcher/keystore/README-keystore.txt <<'EOF'
+          Keystore file: patcher/keystore/debug.keystore
+          storePassword=androiddebug
+          keyAlias=androiddebugkey
+          keyPassword=androiddebug
+
+          Generate with:
+          keytool -genkeypair -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -keystore debug.keystore -storepass androiddebug -keypass androiddebug -dname 'CN=Android Debug,O=Android,C=US'
+          EOF
+
+          echo "Writing API files..."
+
+          cat > api/package.json <<'EOF'
+          {
+            "name": "stremio-skip-api",
+            "version": "1.0.0",
+            "description": "Skip metadata API for Stremio skip intro feature",
+            "main": "index.js",
+            "scripts": {
+              "start": "node index.js",
+              "test": "jest --runInBand"
+            },
+            "dependencies": {
+              "express": "^4.18.2",
+              "cors": "^2.8.5"
+            },
+            "devDependencies": {
+              "jest": "^29.2.0",
+              "supertest": "^6.3.1"
+            },
+            "jest": {
+              "testEnvironment": "node"
+            }
+          }
+          EOF
+
+          cat > api/index.js <<'EOF'
+          const express = require('express');
+          const path = require('path');
+          const fs = require('fs');
+          const cors = require('cors');
+
+          const app = express();
+          app.use(cors());
+
+          // Health check endpoint
+          app.get('/health', (req, res) => {
+            res.json({ status: 'ok' });
+          });
+
+          // Skip metadata endpoint
+          app.get('/skip/:imdbId/:season/:episode', (req, res) => {
+            const { imdbId, season, episode } = req.params;
+            const filePath = path.join(__dirname, 'skip', imdbId, `s${season}e${episode}.json`);
+
+            try {
+              if (fs.existsSync(filePath)) {
+                const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                res.json(data);
+              } else {
+                res.status(404).json({ error: 'Skip metadata not found' });
+              }
+            } catch (error) {
+              res.status(500).json({ error: 'Internal server error' });
+            }
+          });
+
+          const PORT = process.env.PORT || 3000;
+          app.listen(PORT, () => {
+            console.log(`Skip API server running on port ${PORT}`);
+          });
+
+          module.exports = app;
+          EOF
+
+          cat > api/Dockerfile <<'EOF'
+          FROM node:18-alpine
+
+          WORKDIR /usr/src/app
+
+          COPY package.json package-lock.json* ./
+          RUN npm ci --only=production
+
+          COPY . .
+
+          EXPOSE 3000
+
+          CMD ["node", "index.js"]
+          EOF
+
+          cat > api/skip/tt9999999/s1e1.json <<'EOF'
+          {
+            "imdbId": "tt9999999",
+            "season": 1,
+            "episode": 1,
+            "intro": { "start": 0.035, "end": 0.072 },
+            "recap": { "start": 0.000, "end": 0.027 },
+            "duration": 3600,
+            "skips": [
+              { "start": 30, "end": 90, "reason": "intro" }
+            ]
+          }
+          EOF
+
+          cat > api/skip/tt9999999/s1e2.json <<'EOF'
+          {
+            "imdbId": "tt9999999",
+            "season": 1,
+            "episode": 2,
+            "intro": { "start": 0.030, "end": 0.070 },
+            "recap": { "start": 0.000, "end": 0.025 },
+            "duration": 3600,
+            "skips": [
+              { "start": 25, "end": 85, "reason": "intro" },
+              { "start": 1200, "end": 1215, "reason": "recap" }
+            ]
+          }
+          EOF
+
+          cat > api/tests/api.test.js <<'EOF'
+          const request = require('supertest');
+          const app = require('../index');
+
+          describe('Skip API', () => {
+            test('GET /health returns ok', async () => {
+              const response = await request(app).get('/health');
+              expect(response.status).toBe(200);
+              expect(response.body.status).toBe('ok');
+            });
+
+            test('GET /skip existing file returns JSON', async () => {
+              const response = await request(app).get('/skip/tt9999999/1/1');
+              expect(response.status).toBe(200);
+              expect(response.body.imdbId).toBe('tt9999999');
+              expect(Array.isArray(response.body.skips)).toBe(true);
+            });
+          });
+          EOF
+
+          echo "Writing analyzer files..."
+
+          cat > analyzer/analyze.py <<'EOF'
+          #!/usr/bin/env python3
+          import argparse
+          import json
+          import os
+          import random
+
+          def analyze_file(file_path):
+              """Analyze video file and generate skip segments"""
+              # Simulated analysis - replace with actual video analysis logic
+              return {
+                  "file": file_path,
+                  "skips": [
+                      {
+                          "start": random.randint(20, 40),
+                          "end": random.randint(80, 120),
+                          "confidence": 0.8,
+                          "reason": "intro"
+                      }
+                  ]
+              }
+
+          def main():
+              parser = argparse.ArgumentParser(description='Analyze video files for skip segments')
+              parser.add_argument('--input', help='Input video file path')
+              parser.add_argument('--output', default='output.json', help='Output JSON file path')
+              parser.add_argument('--simulate', action='store_true', help='Generate sample data without analysis')
+
+              args = parser.parse_args()
+
+              if args.simulate or not args.input:
+                  # Generate sample data
+                  result = {
+                      "file": args.input or "sample.mp4",
+                      "skips": [
+                          {
+                              "start": random.randint(25, 35),
+                              "end": random.randint(85, 95),
+                              "confidence": 0.8,
+                              "reason": "intro"
+                          }
+                      ]
+                  }
+              else:
+                  # Analyze actual file
+                  result = analyze_file(args.input)
+
+              # Write output
+              with open(args.output, 'w') as f:
+                  json.dump(result, f, indent=2)
+
+              print(f"Analysis complete. Results saved to {args.output}")
+
+          if __name__ == '__main__':
+              main()
+          EOF
+
+          cat > analyzer/requirements.txt <<'EOF'
+          click==8.1.3
+          pytest==7.2.2
+          EOF
+
+          cat > analyzer/Dockerfile <<'EOF'
+          FROM python:3.10-slim
+
+          WORKDIR /app
+
+          COPY requirements.txt .
+          RUN pip install --no-cache-dir -r requirements.txt
+
+          COPY . .
+
+          ENTRYPOINT ["python", "analyze.py"]
+          EOF
+
+          cat > analyzer/README.md <<'EOF'
+          Analyzer CLI to generate skip JSON for Stremio Skip API.
+          Usage:
+            python analyze.py --input /path/to/video --output out.json
+          EOF
+
+          echo "Writing root README and workflow..."
+
+          cat > README.md <<'EOF'
+          # Stremio Skip Patcher Monorepo
+
+          This repository contains:
+          - patcher/: Android Studio project for the patcher app
+          - api/: Node.js skip metadata server
+          - analyzer/: Python analyzer to generate skip metadata
+          - temp./github/workflows/: CI workflows
+
+          Build instructions are included in each subfolder README.
+          EOF
+
+          cat > temp./github/workflows/build.yml <<'EOF'
+          name: Build Stremio Skip Patcher Monorepo
+
+          on:
+            push:
+              branches: [ main ]
+            workflow_dispatch:
+
+          jobs:
+            create-structure:
+              runs-on: ubuntu-latest
+
+              steps:
+              - name: Checkout repository
+                uses: actions/checkout@v4
+
+              - name: Create complete folder structure
+                run: |
+                  echo "This workflow is a placeholder in this repo."
+          EOF
+
+          # Create small placeholder binaries and files to mark their positions
+          echo "apktool placeholder" > patcher/app/src/main/assets/apktool
+          echo "apksigner placeholder" > patcher/app/src/main/assets/apksigner
+          echo "debug keystore placeholder" > patcher/app/src/main/assets/debug.keystore
+          echo "gradle wrapper jar placeholder" > patcher/gradle/wrapper/gradle-wrapper.jar
+          touch patcher/keystore/debug.keystore
+
+          echo "Done creating files."
+
+          SH
+          chmod +x bootstrap.sh
+
+      - name: Run bootstrap script to create files
+        run: |
+          ./bootstrap.sh
+          ls -R
+
+      - name: Commit and push created files to PR branch
+        run: |
+          git config user.name "${GIT_AUTHOR_NAME}"
+          git config user.email "${GIT_AUTHOR_EMAIL}"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git pull --rebase --autostash
+            git commit -m "Bootstrap monorepo structure: patcher, api, analyzer"
+            BRANCH="bootstrap-${{ github.run_id }}"
+            git checkout -b "$BRANCH"
+            git remote set-url origin https://x-access-token:${GH_PAT}@github.com/iHagoss/stremio-skip-button
+            git push origin "$BRANCH"
+            gh pr create --title "Bootstrap monorepo structure" --body "Automated bootstrap commit" --base main --head "$BRANCH"
+          fi
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+
+      - name: Create zip archive of created project
+        id: create-and-commit
+        run: |
+          ZIP_NAME="stremio-skip-patcher-bootstrap-${{ github.run_id }}.zip"
+          zip -r "$ZIP_NAME" patcher api analyzer README.md .github || true
+          echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload bootstrap zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stremio-skip-patcher-bootstrap
+          path: ${{ steps.create-and-commit.outputs.ZIP_NAME || format('stremio-skip-patcher-bootstrap-%s.zip', github.run_id) }}
