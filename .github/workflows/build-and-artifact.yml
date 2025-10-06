@@ -49,7 +49,6 @@ jobs:
         run: |
           set -euo pipefail
           export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$PATH"
-          # retry helper for transient network failures
           retry() {
             local i=0
             until [ "$i" -ge 3 ]; do
@@ -98,6 +97,7 @@ jobs:
             ls -R patcher/app/build || true
             exit 1
           fi
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
