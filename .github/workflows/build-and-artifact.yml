@@ -35,21 +35,19 @@ jobs:
           $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager \
             "platform-tools" "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Create debug keystore if missing
+      - name: Force regenerate debug keystore
         run: |
-          KEYSTORE="patcher/keystore/debug.keystore"
-          if [ ! -f "$KEYSTORE" ]; then
-            mkdir -p "$(dirname "$KEYSTORE")"
-            keytool -genkey -v \
-              -keystore "$KEYSTORE" \
-              -alias androiddebugkey \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -storepass androiddebug \
-              -keypass androiddebug \
-              -dname "CN=Android Debug,O=Android,C=US"
-          fi
+          rm -f patcher/keystore/debug.keystore
+          mkdir -p patcher/keystore
+          keytool -genkey -v \
+            -keystore patcher/keystore/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass androiddebug \
+            -keypass androiddebug \
+            -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Make gradlew executable
         run: chmod +x patcher/gradlew
