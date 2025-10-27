@@ -2,43 +2,50 @@
 
 ## ✅ Implemented Features
 
-### 1. Fullscreen Video Playback
+### 1. External Player Support
+- **Intent-Filter Configuration**: Responds to ACTION_VIEW intents
+- **Stremio/Syncler Compatible**: Works as external player for streaming apps
+- **URL Validation**: Validates http/https video URLs from external apps
+- **Graceful Error Handling**: Shows error message if invalid URL provided
+- **Dual Launch Modes**: Standalone app or external player
+
+### 2. Fullscreen Video Playback
 - **ExoPlayer Integration**: Industry-standard media player for Android
 - **Fullscreen PlayerView**: Optimized for TV displays
 - **Persistent Screen**: Screen stays on during playback
 - **Lifecycle Management**: Proper pause/resume handling
 
-### 2. Remote API Integration
+### 3. Remote API Integration
 - **HTTP Client**: OkHttp for reliable API calls
 - **JSON Parsing**: Gson for deserializing skip markers
 - **Error Handling**: Fallback to default markers if API fails
 - **Async Processing**: Non-blocking API requests with callbacks
 
-### 3. Auto-Skip Intro
+### 4. Auto-Skip Intro
 - **Automatic Seeking**: Skips intro on first playback entry
 - **Single Execution**: Protected by `introAutoSkipped` flag
 - **Smart Timing**: Works regardless of when markers load
 - **Fallback Support**: Uses default markers if API unavailable
 
-### 4. Skip Intro Button
+### 5. Skip Intro Button
 - **Dynamic Visibility**: Appears during intro range
 - **Manual Control**: Users can skip intro if they rewind
 - **D-pad Navigation**: Fully focusable for remote control
 - **Position-Based**: Hides when outside intro range
 
-### 5. Skip Credits Button
+### 6. Skip Credits Button
 - **Range Detection**: Shows during credits timestamps
 - **Seek to End**: Jumps to video end when clicked
 - **Remote Friendly**: Supports D-pad navigation
 - **Real-time Updates**: Visibility updated every 500ms
 
-### 6. Android TV Optimization
+### 7. Android TV Optimization
 - **LEANBACK Launcher**: Appears in TV home screen
 - **Banner Icon**: Vector drawable for all resolutions
 - **Touchscreen Optional**: Not required for TV devices
 - **Focus Management**: All buttons support D-pad navigation
 
-### 7. Proper Permissions
+### 8. Proper Permissions
 - **INTERNET**: Required for video streaming and API calls
 - **SYSTEM_ALERT_WINDOW**: For overlay capabilities
 - **Leanback Feature**: Marks app as TV-compatible

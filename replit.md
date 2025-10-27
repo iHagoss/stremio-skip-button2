@@ -1,7 +1,7 @@
 # TV Player - Android TV App
 
 ## Overview
-An Android TV application built with ExoPlayer that provides intelligent intro and credits skipping functionality. The app fetches skip markers from a remote API and automatically handles video navigation.
+An Android TV application built with ExoPlayer that provides intelligent intro and credits skipping functionality. The app can be used as a standalone player or launched as an external video player from apps like Stremio and Syncler. It fetches skip markers from a remote API and automatically handles video navigation.
 
 ## Features
 - **Fullscreen Video Playback**: ExoPlayer-based media player with fullscreen PlayerView
@@ -62,6 +62,8 @@ Edit `MainActivity.java` to set:
 - 2025-10-27: Fixed auto-skip intro to trigger when markers load (async API timing fix)
 - 2025-10-27: Fixed Skip Intro button to hide after auto-skip occurs
 - 2025-10-27: Removed duplicate auto-skip logic to prevent repeated seeks
+- 2025-10-27: Added external video player support for Stremio/Syncler integration
+- 2025-10-27: Implemented intent validation and graceful error handling for external launches
 
 ## User Preferences
 None yet

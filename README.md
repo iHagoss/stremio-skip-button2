@@ -1,10 +1,11 @@
 # TV Player - Android TV App
 
-An Android TV application with ExoPlayer that provides intelligent intro and credits skipping functionality.
+An Android TV application with ExoPlayer that provides intelligent intro and credits skipping functionality. Can be used as a standalone player or launched as an external video player from apps like Stremio and Syncler.
 
 ## Features
 
 - **Fullscreen Video Playback**: ExoPlayer-based media player optimized for TV
+- **External Player Support**: Can be launched from Stremio, Syncler, and other apps
 - **Remote API Integration**: Fetches intro/credits timestamps from JSON API
 - **Auto-Skip Intro**: Automatically seeks past intro when playback starts
 - **Skip Intro Button**: Appears during intro range with D-pad navigation support
@@ -30,15 +31,27 @@ The app expects a JSON response from your API endpoint:
 
 All timestamps are in seconds.
 
-## Configuration
+## Usage
 
-Edit `app/src/main/java/com/tvplayer/app/MainActivity.java`:
+### As Standalone Player
 
-```java
-// Line 28-29
-private static final String VIDEO_URL = "YOUR_VIDEO_URL_HERE";
-private static final String MARKERS_API_URL = "YOUR_API_ENDPOINT_HERE";
-```
+1. Launch from Android TV home screen
+2. Edit `app/src/main/java/com/tvplayer/app/MainActivity.java` to configure:
+   ```java
+   // Line 27-28
+   private static final String VIDEO_URL = "YOUR_VIDEO_URL_HERE";
+   private static final String MARKERS_API_URL = "YOUR_API_ENDPOINT_HERE";
+   ```
+
+### As External Player (from Stremio/Syncler)
+
+1. Install the app on your Android TV
+2. In Stremio or Syncler, select a video
+3. Choose "Play with" or "External Player"
+4. Select "TV Player" from the list
+5. The video will play automatically with skip functionality
+
+**Note**: External player mode requires a valid http:// or https:// video URL. If no valid URL is provided, the app will show an error and close gracefully.
 
 ## Project Structure
 

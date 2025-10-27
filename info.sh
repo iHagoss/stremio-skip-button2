@@ -17,6 +17,7 @@ This is an Android TV application built with ExoPlayer.
 ✅ Android TV optimized
 
 📱 FEATURES:
+  • External player support (Stremio, Syncler compatible)
   • Fullscreen video playback with ExoPlayer
   • Remote API integration for skip markers  
   • Auto-skip intro on playback start
@@ -43,9 +44,11 @@ This is an Android TV application built with ExoPlayer.
    adb install app/build/outputs/apk/debug/app-debug.apk
 
 📚 DOCUMENTATION:
-  • README.md  - Complete documentation and build instructions
-  • SETUP.md   - Step-by-step setup guide
-  • replit.md  - Project structure and architecture
+  • README.md           - Complete documentation and build instructions
+  • SETUP.md            - Step-by-step setup guide  
+  • EXTERNAL_PLAYER.md  - How to use with Stremio/Syncler
+  • FEATURES.md         - Complete feature list
+  • replit.md           - Project structure and architecture
 
 🔧 API FORMAT:
 Your API endpoint should return JSON:
