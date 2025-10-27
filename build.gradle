@@ -1,5 +1,11 @@
-buildscript {
-    dependencies {
-        classpath "com.android.tools.build:gradle:8.10.0"
-    }
+import org.gradle.api.tasks.Delete
+
+
+
+plugins {
+    id 'com.android.application' version '8.10.1' apply false
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.getLayout().getBuildDirectory()
 }
