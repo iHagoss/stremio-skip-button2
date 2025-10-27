@@ -47,9 +47,12 @@ fi
 echo "ANDROID_HOME: $ANDROID_HOME"
 echo ""
 
-# Build the app using system Gradle
+# Make gradlew executable
+chmod +x gradlew
+
+# Build the app
 echo "Building debug APK..."
-gradle assembleDebug
+./gradlew assembleDebug
 
 if [ $? -eq 0 ]; then
     echo ""
