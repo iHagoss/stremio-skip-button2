@@ -1,1 +1,22 @@
+- name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
+      - name: Install required Unix tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y coreutils findutils
+
+      - name: Ensure Gradle wrapper
+        run: |
+          dos2unix gradlew
+          chmod +x gradlew
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            echo "gradle-wrapper.jar missing, regenerating..."
+            gradle wrapper --gradle-version 9.1 --distribution-type=bin
+          fi
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace
