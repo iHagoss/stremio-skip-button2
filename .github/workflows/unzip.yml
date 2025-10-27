@@ -1,39 +1,33 @@
-name: Unzip All Archives In Place
+name: Extract ZIPs in-place
 
 on:
+  push:
+    paths:
+      - '**.zip'
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  unzip-files:
+  unzip:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Find and unzip all .zip files
+      - name: Extract all ZIPs in-place
         run: |
-          echo "Searching for .zip files..."
-          find . -type f -name "*.zip" | while read zipfile; do
-            echo "Unzipping $zipfile..."
-            unzip -o "$zipfile" -d "$(dirname "$zipfile")"
+          find . -type f -name '*.zip' | while read zipfile; do
+            dir=$(dirname "$zipfile")
+            unzip -o "$zipfile" -d "$dir"
+            rm "$zipfile"
           done
 
-      - name: Commit and push unzipped files
+      - name: Commit extracted files
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add .
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Unzipped archives in-place"
-            git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }} HEAD:${{ github.ref_name }}
-          fi
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
+          git commit -m "Extracted ZIPs in-place"
+          git push origin HEAD
