@@ -33,14 +33,14 @@ jobs:
             echo "No ZIP files found. Skipping extraction."
           fi
 
-      - name: Commit extracted files
+      - name: Configure Git and push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
             git commit -m "Extracted ZIPs in-place"
             git push origin HEAD
-          fi
