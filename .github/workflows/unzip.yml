@@ -16,7 +16,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # full history so rebase works
+          fetch-depth: 0   # full history
+          persist-credentials: false  # we’ll set our own remote
 
       - name: Install unzip
         run: sudo apt-get update && sudo apt-get install -y unzip
@@ -42,23 +43,18 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Ensure remote is set
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
+          # Explicitly add remote (fixes 'No such remote origin')
+          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
 
-          # Get branch name from ref
           branch="${GITHUB_REF#refs/heads/}"
-          git checkout "$branch"
+          git checkout -B "$branch"
 
-          # Stage and commit first
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
+
           git commit -m "Extracted ZIPs in-place"
-
-          # Rebase with remote to avoid non-fast-forward errors
           git pull --rebase origin "$branch" || true
-
-          # Push changes
           git push origin "$branch"
