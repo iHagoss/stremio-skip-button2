@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # ensures full history for rebase/push
+          fetch-depth: 0  # Required for rebase and push
 
       - name: Install unzip
         run: sudo apt-get update && sudo apt-get install -y unzip
@@ -42,17 +42,19 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # Ensure remote is set
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
+          # Set remote explicitly
+          git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
 
-          # Ensure we're on the correct branch
+          # Extract branch name from GITHUB_REF
           branch="${GITHUB_REF#refs/heads/}"
-          git checkout "$branch"
+
+          # Create and switch to the branch if needed
+          git checkout -B "$branch"
 
           # Pull latest changes to avoid non-fast-forward error
           git pull --rebase origin "$branch"
 
-          # Stage and commit if needed
+          # Stage and commit changes
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit."
