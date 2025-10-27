@@ -1,10 +1,12 @@
 package com.tvplayer.app;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -44,10 +46,15 @@ public class MainActivity extends AppCompatActivity {
     }
     
     private void initializePlayer() {
+        String videoUrl = getVideoUrlFromIntent();
+        if (videoUrl == null) {
+            return;
+        }
+        
         player = new ExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
         
-        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(VIDEO_URL));
+        MediaItem mediaItem = MediaItem.fromUri(Uri.parse(videoUrl));
         player.setMediaItem(mediaItem);
         player.prepare();
         player.setPlayWhenReady(true);
@@ -59,6 +66,46 @@ public class MainActivity extends AppCompatActivity {
         });
         
         startPositionUpdates();
+    }
+    
+    private String getVideoUrlFromIntent() {
+        boolean isExternalLaunch = Intent.ACTION_VIEW.equals(getIntent().getAction());
+        
+        Uri intentData = getIntent().getData();
+        if (isValidVideoUri(intentData)) {
+            return intentData.toString();
+        }
+        
+        Uri extraStream = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        if (isValidVideoUri(extraStream)) {
+            return extraStream.toString();
+        }
+        
+        if (isExternalLaunch) {
+            Toast.makeText(this, "No valid video URL provided", Toast.LENGTH_LONG).show();
+            finish();
+            return null;
+        }
+        
+        return VIDEO_URL;
+    }
+    
+    private boolean isValidVideoUri(Uri uri) {
+        if (uri == null) {
+            return false;
+        }
+        
+        String uriString = uri.toString();
+        if (uriString == null || uriString.isEmpty()) {
+            return false;
+        }
+        
+        String scheme = uri.getScheme();
+        if (scheme == null) {
+            return false;
+        }
+        
+        return scheme.equals("http") || scheme.equals("https");
     }
     
     private void setupSkipButtons() {
