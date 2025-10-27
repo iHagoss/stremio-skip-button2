@@ -1,4 +1,4 @@
-name: Extract ZIPs in-place
+name: Extract ZIPs and create PR
 
 on:
   push:
@@ -11,13 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Ensure unzip is available
-        run: sudo apt-get install -y unzip
+      - name: Install unzip and GitHub CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip gh
 
       - name: Extract all ZIPs in-place
         run: |
@@ -33,14 +36,29 @@ jobs:
             echo "No ZIP files found. Skipping extraction."
           fi
 
-      - name: Configure Git and push changes
+      - name: Create commit and PR using GitHub CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Extract branch name from current ref
+          base_branch="${GITHUB_REF#refs/heads/}"
+          pr_branch="extract-zips-$(date +%s)"
+
+          # Create new branch and commit changes
+          git checkout -b "$pr_branch"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit."
-          else
-            git commit -m "Extracted ZIPs in-place"
-            git push origin HEAD
+            exit 0
+          fi
+          git commit -m "Extracted ZIPs in-place"
+          git push origin "$pr_branch"
+
+          # Create pull request
+          gh pr create \
+            --title "Extracted ZIPs" \
+            --body "Auto-extracted ZIPs and removed archives." \
+            --base "$base_branch" \
+            --head "$pr_branch"
