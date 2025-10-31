@@ -39,4 +39,3 @@
             android:layoutheight="wrapcontent"/>
     </LinearLayout>
 </ScrollView>
-`
