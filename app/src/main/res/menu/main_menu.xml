@@ -4,4 +4,8 @@
         android:id="@+id/action_settings"
         android:title="Settings"
         android:showAsAction="never"/>
+    <item
+      android:id="@+id/actionmanualskip"
+      android:title="Manual Skip Editor"
+      android:showAsAction="never"/>
 </menu>
