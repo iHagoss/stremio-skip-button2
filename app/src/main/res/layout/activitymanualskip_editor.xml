@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
+?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layoutwidth="matchparent"
-    android:layout_height="matchparent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/addSkipButton"
         android:text="Add Skip Range"
-        android:layoutwidth="wrapcontent"
-        android:layout_height="wrapcontent"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 
     <ListView
         android:id="@+id/skipListView"
-        android:layoutwidth="matchparent"
-        android:layout_height="wrapcontent"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
