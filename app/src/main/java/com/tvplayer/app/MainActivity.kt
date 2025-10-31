@@ -5,23 +5,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.FrameLayout
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.tvplayer.app.skip.MetadataProviderChain
-import com.tvplayer.app.skip.SkipOverlay
-import com.tvplayer.app.skip.SkipRangeManager
-import com.tvplayer.app.skip.TraktProvider
-import com.tvplayer.app.skip.TMDbProvider
-import com.tvplayer.app.skip.TVDBProvider
+import com.tvplayer.app.skip.*
 import org.json.JSONArray
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,8 +30,15 @@ class MainActivity : AppCompatActivity() {
     private val updateHandler = Handler(Looper.getMainLooper())
     private var updateRunnable: Runnable? = null
 
+    // Time info views
+    private lateinit var timeElapsed: TextView
+    private lateinit var timeRemaining: TextView
+    private lateinit var timeTotal: TextView
+    private lateinit var timeNow: TextView
+    private lateinit var timeEnd: TextView
+    private lateinit var timeInfoLayout: LinearLayout
+
     companion object {
-        private const val TAG = "MainActivity"
         private const val VIDEO_URL =
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         private const val UPDATE_INTERVAL_MS = 500L
@@ -48,6 +50,17 @@ class MainActivity : AppCompatActivity() {
 
         playerView = findViewById(R.id.player_view)
         skipOverlayContainer = findViewById(R.id.skipOverlayContainer)
+
+        timeElapsed = playerView.findViewById(R.id.timeElapsed)
+        timeRemaining = playerView.findViewById(R.id.timeRemaining)
+        timeTotal = playerView.findViewById(R.id.timeTotal)
+        timeNow = playerView.findViewById(R.id.timeNow)
+        timeEnd = playerView.findViewById(R.id.timeEnd)
+        timeInfoLayout = playerView.findViewById(R.id.timeInfoLayout)
+
+        playerView.setControllerVisibilityListener { visibility ->
+            timeInfoLayout.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+        }
 
         skipRangeManager = createSkipRangeManager()
 
@@ -62,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         val tvdbApiKey = prefs.getString("TVDB_API_KEY", null)
         val skipLogic = prefs.getString("SKIP_LOGIC", "Defaults")
 
-        val providers = mutableListOf<com.tvplayer.app.skip.MetadataProvider>()
+        val providers = mutableListOf<MetadataProvider>()
 
         if (!traktApiKey.isNullOrEmpty() && skipLogic == "Trakt") {
             providers.add(TraktProvider(traktApiKey))
@@ -199,7 +212,10 @@ class MainActivity : AppCompatActivity() {
         stopPositionUpdates()
         updateRunnable = object : Runnable {
             override fun run() {
-                player?.let { skipOverlay?.updatePosition(it.currentPosition) }
+                player?.let {
+                    skipOverlay?.updatePosition(it.currentPosition)
+                    updateTimeInfo()
+                }
                 updateHandler.postDelayed(this, UPDATE_INTERVAL_MS)
             }
         }
@@ -211,44 +227,37 @@ class MainActivity : AppCompatActivity() {
         updateRunnable = null
     }
 
+    private fun updateTimeInfo() {
+        val p = player ?: return
+        val elapsed = p.currentPosition
+        val duration = p.duration.takeIf { it > 0 } ?: return
+        val remaining = duration - elapsed
+        val speed = p.playbackParameters.speed
+
+        val adjustedRemaining = (remaining / speed).toLong()
+        val now = System.currentTimeMillis()
+        val endTime = now + adjustedRemaining
+
+        timeElapsed.text = formatTime(elapsed)
+        timeRemaining.text = "-${formatTime(remaining)}"
+        timeTotal.text = "Total: ${formatTime(duration)}"
+        timeNow.text = "Now: ${formatClock(now)}"
+        timeEnd.text = "Ends: ${formatClock(endTime)}"
+    }
+
+    private fun formatTime(ms: Long): String {
+        val totalSeconds = ms / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
+
+    private fun formatClock(ms: Long): String {
+        val cal = Calendar.getInstance().apply { timeInMillis = ms }
+        val hour = cal.get(Calendar.HOUR_OF_DAY)
+        val minute = cal.get(Calendar.MINUTE)
+        return String.format("%d:%02d", hour, minute)
+    }
+
     private fun handleNextEpisode() {
-        Toast.makeText(this, "Next Episode - placeholder", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-            R.id.action_manual_skip -> {
-                startActivity(Intent(this, ManualSkipEditorActivity::class.java))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        player?.playWhenReady = true
-    }
-
-    override fun onStop() {
-        super.onStop()
-        player?.playWhenReady = false
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopPositionUpdates()
-        skipOverlay?.cleanup()
-        player?.release()
-        player = null
-    }
-}
+        Toast.makeText(this, "Next Episode
