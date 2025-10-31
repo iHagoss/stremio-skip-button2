@@ -1,4 +1,3 @@
-`kotlin
 package com.tvplayer.app
 
 import android.content.SharedPreferences
@@ -38,4 +37,3 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 }
-`
