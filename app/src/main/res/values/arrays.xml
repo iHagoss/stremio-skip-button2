@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="skiplogicoptions">
+    <!-- Options for SettingsActivity skip logic spinner -->
+    <string-array name="skip_logic_options">
         <item>Defaults</item>
         <item>Trakt</item>
         <item>TMDb</item>
         <item>TVDB</item>
         <item>Manual</item>
+    </string-array>
+
+    <!-- Options for ManualSkipEditorActivity skip type spinner -->
+    <string-array name="skip_type_options">
+        <item>cold_open</item>
+        <item>intro</item>
+        <item>recap</item>
+        <item>credits_start</item>
+        <item>credits_end</item>
     </string-array>
 </resources>
