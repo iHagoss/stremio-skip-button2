@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.exoplayer2.ui.StyledPlayerControlView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/exo_controller"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Keep the default controls (play/pause, seekbar, etc.) -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Default time bar and buttons -->
+        <include layout="@layout/exo_styled_player_control_view"/>
+
+        <!-- Our custom time info row -->
+        <LinearLayout
+            android:id="@+id/timeInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="4dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/timeElapsed"
+                android:text="0:00"
+                android:textColor="@color/timeElapsedColor"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:id="@+id/timeRemaining"
+                android:text="-0:00"
+                android:textColor="@color/timeRemainingColor"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:id="@+id/timeTotal"
+                android:text="0:00"
+                android:textColor="@color/timeTotalColor"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:id="@+id/timeNow"
+                android:text="Now: 12:34"
+                android:textColor="@color/timeNowColor"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:id="@+id/timeEnd"
+                android:text="Ends: 1:41"
+                android:textColor="@color/timeEndColor"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.exoplayer2.ui.StyledPlayerControlView>
