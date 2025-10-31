@@ -3,16 +3,16 @@
     android:orientation="vertical"
     android:padding="16dp"
     android:layoutwidth="matchparent"
-    android:layoutheight="matchparent">
+    android:layout_height="matchparent">
 
     <Button
         android:id="@+id/addSkipButton"
         android:text="Add Skip Range"
         android:layoutwidth="wrapcontent"
-        android:layoutheight="wrapcontent"/>
+        android:layout_height="wrapcontent"/>
 
     <ListView
         android:id="@+id/skipListView"
         android:layoutwidth="matchparent"
-        android:layoutheight="wrapcontent"/>
+        android:layout_height="wrapcontent"/>
 </LinearLayout>
