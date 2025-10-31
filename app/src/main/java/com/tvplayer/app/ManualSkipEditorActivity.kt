@@ -2,6 +2,7 @@ package com.tvplayer.app
 
 import android.os.Bundle
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONArray
 import org.json.JSONObject
@@ -29,16 +30,7 @@ class ManualSkipEditorActivity : AppCompatActivity() {
         listView.adapter = adapter
 
         addButton.setOnClickListener {
-            // Example: add a dummy range (replace with dialog input later)
-            val newRange = JSONObject().apply {
-                put("start", 0.0)
-                put("end", 10.0)
-                put("type", "cold_open")
-            }
-
-            skipRanges.add("Start: 0s, End: 10s, Type: cold_open")
-            saveRange(newRange)
-            adapter.notifyDataSetChanged()
+            showAddRangeDialog()
         }
 
         listView.setOnItemLongClickListener { _, _, position, _ ->
@@ -47,6 +39,34 @@ class ManualSkipEditorActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
             true
         }
+    }
+
+    private fun showAddRangeDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_skip_range, null)
+        val startInput = dialogView.findViewById<EditText>(R.id.startInput)
+        val endInput = dialogView.findViewById<EditText>(R.id.endInput)
+        val typeInput = dialogView.findViewById<EditText>(R.id.typeInput)
+
+        AlertDialog.Builder(this)
+            .setTitle("Add Skip Range")
+            .setView(dialogView)
+            .setPositiveButton("Save") { _, _ ->
+                val start = startInput.text.toString().toDoubleOrNull() ?: 0.0
+                val end = endInput.text.toString().toDoubleOrNull() ?: 0.0
+                val type = typeInput.text.toString().ifBlank { "unknown" }
+
+                val newRange = JSONObject().apply {
+                    put("start", start)
+                    put("end", end)
+                    put("type", type)
+                }
+
+                skipRanges.add("Start: ${start}s, End: ${end}s, Type: $type")
+                saveRange(newRange)
+                adapter.notifyDataSetChanged()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun loadRanges() {
@@ -70,7 +90,6 @@ class ManualSkipEditorActivity : AppCompatActivity() {
     private fun saveAllRanges() {
         val arr = JSONArray()
         for (item in skipRanges) {
-            // Parse back from the display string
             try {
                 val parts = item.split(", ")
                 val start = parts[0].substringAfter("Start: ").substringBefore("s").toDouble()
@@ -82,9 +101,7 @@ class ManualSkipEditorActivity : AppCompatActivity() {
                     put("type", type)
                 }
                 arr.put(obj)
-            } catch (e: Exception) {
-                // Skip malformed entries
-            }
+            } catch (_: Exception) { }
         }
         prefs.edit().putString("MANUAL_SKIP_RANGES", arr.toString()).apply()
     }
