@@ -3,9 +3,9 @@
     <item
         android:id="@+id/action_settings"
         android:title="Settings"
-        android:showAsAction="never"/>
+        android:showAsAction="never" />
     <item
-      android:id="@+id/actionmanualskip"
-      android:title="Manual Skip Editor"
-      android:showAsAction="never"/>
+        android:id="@+id/action_manual_skip"
+        android:title="Manual Skip Editor"
+        android:showAsAction="never" />
 </menu>
