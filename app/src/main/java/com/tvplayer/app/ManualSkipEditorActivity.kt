@@ -1,6 +1,5 @@
 package com.tvplayer.app
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,7 @@ class ManualSkipEditorActivity : AppCompatActivity() {
 
     private lateinit var listView: ListView
     private lateinit var addButton: Button
-    private lateinit var prefs: SharedPreferences
+    private lateinit var prefs: android.content.SharedPreferences
     private lateinit var adapter: ArrayAdapter<String>
     private val skipRanges = mutableListOf<String>()
 
@@ -30,11 +29,12 @@ class ManualSkipEditorActivity : AppCompatActivity() {
         listView.adapter = adapter
 
         addButton.setOnClickListener {
-            // Example: add a dummy range, you can replace with a dialog for custom input
-            val newRange = JSONObject()
-            newRange.put("start", 0.0)
-            newRange.put("end", 10.0)
-            newRange.put("type", "cold_open")
+            // Example: add a dummy range (replace with dialog input later)
+            val newRange = JSONObject().apply {
+                put("start", 0.0)
+                put("end", 10.0)
+                put("type", "cold_open")
+            }
 
             skipRanges.add("Start: 0s, End: 10s, Type: cold_open")
             saveRange(newRange)
@@ -54,7 +54,10 @@ class ManualSkipEditorActivity : AppCompatActivity() {
         val arr = JSONArray(json)
         for (i in 0 until arr.length()) {
             val obj = arr.getJSONObject(i)
-            skipRanges.add("Start: ${obj.getDouble("start")}s, End: ${obj.getDouble("end")}s, Type: ${obj.getString("type")}")
+            val start = obj.optDouble("start", 0.0)
+            val end = obj.optDouble("end", 0.0)
+            val type = obj.optString("type", "unknown")
+            skipRanges.add("Start: ${start}s, End: ${end}s, Type: $type")
         }
     }
 
@@ -67,16 +70,21 @@ class ManualSkipEditorActivity : AppCompatActivity() {
     private fun saveAllRanges() {
         val arr = JSONArray()
         for (item in skipRanges) {
-            // crude parse back, ideally store structured objects
-            val parts = item.split(", ")
-            val start = parts[0].substringAfter("Start: ").substringBefore("s").toDouble()
-            val end = parts[1].substringAfter("End: ").substringBefore("s").toDouble()
-            val type = parts[2].substringAfter("Type: ")
-            val obj = JSONObject()
-            obj.put("start", start)
-            obj.put("end", end)
-            obj.put("type", type)
-            arr.put(obj)
+            // Parse back from the display string
+            try {
+                val parts = item.split(", ")
+                val start = parts[0].substringAfter("Start: ").substringBefore("s").toDouble()
+                val end = parts[1].substringAfter("End: ").substringBefore("s").toDouble()
+                val type = parts[2].substringAfter("Type: ")
+                val obj = JSONObject().apply {
+                    put("start", start)
+                    put("end", end)
+                    put("type", type)
+                }
+                arr.put(obj)
+            } catch (e: Exception) {
+                // Skip malformed entries
+            }
         }
         prefs.edit().putString("MANUAL_SKIP_RANGES", arr.toString()).apply()
     }
