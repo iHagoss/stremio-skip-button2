@@ -1,6 +1,5 @@
 package com.tvplayer.app
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -16,20 +15,26 @@ class SettingsActivity : AppCompatActivity() {
         val logicSpinner = findViewById<Spinner>(R.id.skipLogicSpinner)
         val saveButton = findViewById<Button>(R.id.saveButton)
 
-        val prefs = getSharedPreferences("tvplayerprefs", MODEPRIVATE)
+        // Use MODE_PRIVATE constant and consistent preference name
+        val prefs = getSharedPreferences("tvplayer_prefs", MODE_PRIVATE)
 
-        // Load saved values
-        traktInput.setText(prefs.getString("TRAKTAPIKEY", ""))
-        tmdbInput.setText(prefs.getString("TMDBAPIKEY", ""))
-        tvdbInput.setText(prefs.getString("TVDBAPIKEY", ""))
+        // Load saved values with consistent keys
+        traktInput.setText(prefs.getString("TRAKT_API_KEY", ""))
+        tmdbInput.setText(prefs.getString("TMDB_API_KEY", ""))
+        tvdbInput.setText(prefs.getString("TVDB_API_KEY", ""))
+
         val logic = prefs.getString("SKIP_LOGIC", "Defaults")
-        logicSpinner.setSelection(resources.getStringArray(R.array.skiplogicoptions).indexOf(logic))
+        val options = resources.getStringArray(R.array.skip_logic_options)
+        val index = options.indexOf(logic)
+        if (index >= 0) {
+            logicSpinner.setSelection(index)
+        }
 
         saveButton.setOnClickListener {
             prefs.edit()
-                .putString("TRAKTAPIKEY", traktInput.text.toString())
-                .putString("TMDBAPIKEY", tmdbInput.text.toString())
-                .putString("TVDBAPIKEY", tvdbInput.text.toString())
+                .putString("TRAKT_API_KEY", traktInput.text.toString())
+                .putString("TMDB_API_KEY", tmdbInput.text.toString())
+                .putString("TVDB_API_KEY", tvdbInput.text.toString())
                 .putString("SKIP_LOGIC", logicSpinner.selectedItem.toString())
                 .apply()
             Toast.makeText(this, "Settings saved", Toast.LENGTH_SHORT).show()
