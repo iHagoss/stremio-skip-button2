@@ -19,10 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <EditText
-        android:id="@+id/typeInput"
-        android:hint="Type (e.g. cold_open, credits_end)"
-        android:inputType="text"
+    <Spinner
+        android:id="@+id/typeSpinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>
