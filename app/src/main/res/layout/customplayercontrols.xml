@@ -4,16 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!-- Keep the default controls (play/pause, seekbar, etc.) -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Default time bar and buttons -->
+        <!-- Default ExoPlayer controls -->
         <include layout="@layout/exo_styled_player_control_view"/>
 
-        <!-- Our custom time info row -->
+        <!-- Custom time info row -->
         <LinearLayout
             android:id="@+id/timeInfoLayout"
             android:layout_width="match_parent"
