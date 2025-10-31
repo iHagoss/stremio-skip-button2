@@ -1,0 +1,42 @@
+`xml
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layoutwidth="matchparent"
+    android:layoutheight="matchparent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layoutwidth="matchparent"
+        android:layoutheight="wrapcontent">
+
+        <EditText
+            android:id="@+id/traktApiKeyInput"
+            android:hint="Trakt API Key"
+            android:layoutwidth="matchparent"
+            android:layoutheight="wrapcontent"/>
+
+        <EditText
+            android:id="@+id/tmdbApiKeyInput"
+            android:hint="TMDb API Key"
+            android:layoutwidth="matchparent"
+            android:layoutheight="wrapcontent"/>
+
+        <EditText
+            android:id="@+id/tvdbApiKeyInput"
+            android:hint="TVDB API Key"
+            android:layoutwidth="matchparent"
+            android:layoutheight="wrapcontent"/>
+
+        <Spinner
+            android:id="@+id/skipLogicSpinner"
+            android:layoutwidth="matchparent"
+            android:layoutheight="wrapcontent"/>
+
+        <Button
+            android:id="@+id/saveButton"
+            android:text="Save"
+            android:layoutwidth="wrapcontent"
+            android:layoutheight="wrapcontent"/>
+    </LinearLayout>
+</ScrollView>
+`
