@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="matchparent"
-    android:layout_height="matchparent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
         android:padding="16dp"
-        android:layout_width="matchparent"
-        android:layout_height="wrapcontent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/traktApiKeyInput"
             android:hint="Trakt API Key"
-            android:layout_width="matchparent"
-            android:layout_height="wrapcontent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <EditText
             android:id="@+id/tmdbApiKeyInput"
             android:hint="TMDb API Key"
-            android:layout_width="matchparent"
-            android:layout_height="wrapcontent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <EditText
             android:id="@+id/tvdbApiKeyInput"
             android:hint="TVDB API Key"
-            android:layout_width="matchparent"
-            android:layout_height="wrapcontent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <Spinner
             android:id="@+id/skipLogicSpinner"
-            android:layout_width="matchparent"
-            android:layout_height="wrapcontent"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <Button
             android:id="@+id/saveButton"
             android:text="Save"
-            android:layout_width="wrapcontent"
-            android:layout_height="wrapcontent"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 </ScrollView>
