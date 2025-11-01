@@ -32,12 +32,17 @@
                 style="@style/ExoStyledControls.Button.Center.Next" />
 
             <!-- Playback speed button -->
-            <ImageButton
+            <TextView
                 android:id="@+id/exo_playback_speed"
-                style="@style/ExoStyledControls.Button"
-                android:src="@drawable/ic_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="1x"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Playback speed" />
-
+            
             <!-- Audio/Subtitles button -->
             <ImageButton
                 android:id="@+id/exo_track_selection"
