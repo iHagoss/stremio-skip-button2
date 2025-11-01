@@ -57,17 +57,18 @@ class MainActivity : AppCompatActivity() {
 
         // ------------ Inserted custom controls wiring starts here ------------
 
-// Playback speed button
-val speedButton = playerView.findViewById<ImageButton>(R.id.exo_playback_speed)
+// Playback speed button (now a TextView)
+val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
 val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
 var speedIndex = 1 // start at 1x
+speedButton?.text = "${speeds[speedIndex]}x"
+
 speedButton?.setOnClickListener {
     speedIndex = (speedIndex + 1) % speeds.size
     val newSpeed = speeds[speedIndex]
     player.setPlaybackSpeed(newSpeed)
-    Toast.makeText(this, "${newSpeed}x", Toast.LENGTH_SHORT).show()
+    speedButton.text = "${newSpeed}x"
 }
-
 // Audio/Subtitles button
 val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
 trackButton?.setOnClickListener {
