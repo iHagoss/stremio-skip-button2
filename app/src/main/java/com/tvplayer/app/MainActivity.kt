@@ -1,14 +1,18 @@
 package com.tvplayer.app
 
 import android.content.Intent
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -17,7 +21,13 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.tvplayer.app.skip.*
+import com.tvplayer.app.skip.MetadataProviderChain
+import com.tvplayer.app.skip.SkipOverlay
+import com.tvplayer.app.skip.SkipRangeManager
 import com.tvplayer.app.integration.*
+import com.tvplayer.app.skip.TraktProvider
+import com.tvplayer.app.skip.TMDbProvider
+import com.tvplayer.app.skip.TVDBProvider
 import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,219 +35,172 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var playerView: StyledPlayerView
-    private lateinit var player: ExoPlayer
-    private lateinit var trackSelector: DefaultTrackSelector
+    private var player: ExoPlayer? = null
     private lateinit var skipOverlayContainer: FrameLayout
-
+    
     private lateinit var skipRangeManager: SkipRangeManager
     private var skipOverlay: SkipOverlay? = null
-
+    
     private val updateHandler = Handler(Looper.getMainLooper())
     private var updateRunnable: Runnable? = null
-
-    // Time info views
-    private lateinit var timeElapsed: TextView
-    private lateinit var timeRemaining: TextView
-    private lateinit var timeTotal: TextView
-    private lateinit var timeNow: TextView
-    private lateinit var timeEnd: TextView
-    private lateinit var timeInfoLayout: LinearLayout
-
-    // External player integration
-    private lateinit var externalPlayerIntegration: ExternalPlayerIntegration
-
+    
     companion object {
-        private const val VIDEO_URL =
-            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        private const val TAG = "MainActivity"
+        private const val VIDEO_URL = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         private const val UPDATE_INTERVAL_MS = 500L
+        
+        private const val ENV_TRAKT_API_KEY = "TRAKT_API_KEY"
+        private const val ENV_TMDB_API_KEY = "TMDB_API_KEY"
+        private const val ENV_TVDB_API_KEY = "TVDB_API_KEY"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        
         playerView = findViewById(R.id.player_view)
         skipOverlayContainer = findViewById(R.id.skipOverlayContainer)
-
-        // Assign time views before wiring
-        timeElapsed = playerView.findViewById(R.id.timeElapsed)
-        timeRemaining = playerView.findViewById(R.id.timeRemaining)
-        timeTotal = playerView.findViewById(R.id.timeTotal)
-        timeNow = playerView.findViewById(R.id.timeNow)
-        timeEnd = playerView.findViewById(R.id.timeEnd)
-        timeInfoLayout = playerView.findViewById(R.id.timeInfoLayout)
-
-// ------------ Custom controls wiring starts here ------------
-
-    // Make sure these are assigned earlier in onCreate:
-    timeElapsed = playerView.findViewById(R.id.timeElapsed)
-    timeRemaining = playerView.findViewById(R.id.timeRemaining)
-    timeTotal = playerView.findViewById(R.id.timeTotal)
-
-    // Playback speed button (TextView)
-    val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
-    val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
-    var speedIndex = 1 // start at 1x
-    speedButton?.text = "${speeds[speedIndex]}x"
-
-    speedButton?.setOnClickListener {
-        speedIndex = (speedIndex + 1) % speeds.size
-        val newSpeed = speeds[speedIndex]
-        player.setPlaybackSpeed(newSpeed)
-        speedButton.text = "${newSpeed}x"
-    }
-
-    // Audio/Subtitles button (opens ExoPlayer track selection dialog)
-    val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
-    trackButton?.setOnClickListener {
-        TrackSelectionDialogBuilder(
-            this,
-            "Select Tracks",
-            player,              // ✅ fixed: use player, not trackSelector
-            /* rendererIndex = */ 0
-        ).build().show()
-    }
-
-// ------------ Custom controls wiring ends here ------------
-
-        playerView.setControllerVisibilityListener(
-            StyledPlayerView.ControllerVisibilityListener { visibility ->
-                if (visibility == View.VISIBLE) {
-                    // controls are showing
-                } else {
-                    // controls are hidden
-                }
-            }
-        )
-
+        
         skipRangeManager = createSkipRangeManager()
-
-        setupExternalPlayerIntegration()
+        
         initializePlayer()
         setupSkipOverlay()
     }
-
-    private fun setupExternalPlayerIntegration() {
-        refreshExternalPlayerIntegration()
-    }
-
+    
     private fun createSkipRangeManager(): SkipRangeManager {
-        val prefs = getSharedPreferences("tvplayer_prefs", MODE_PRIVATE)
-        val traktApiKey = prefs.getString("TRAKT_API_KEY", null)
-        val tmdbApiKey = prefs.getString("TMDB_API_KEY", null)
-        val tvdbApiKey = prefs.getString("TVDB_API_KEY", null)
-        val skipLogic = prefs.getString("SKIP_LOGIC", "Defaults")
-
-        val providers = mutableListOf<MetadataProvider>()
-
-        if (!traktApiKey.isNullOrEmpty() && skipLogic == "Trakt") {
+        val traktApiKey = System.getenv(ENV_TRAKT_API_KEY)
+        val tmdbApiKey = System.getenv(ENV_TMDB_API_KEY)
+        val tvdbApiKey = System.getenv(ENV_TVDB_API_KEY)
+        
+        val providers = mutableListOf<com.tvplayer.app.skip.MetadataProvider>()
+        
+        if (!traktApiKey.isNullOrEmpty()) {
+            Log.d(TAG, "Trakt API key configured")
             providers.add(TraktProvider(traktApiKey))
+        } else {
+            Log.d(TAG, "Trakt API key not configured, skipping")
         }
-        if (!tmdbApiKey.isNullOrEmpty() && skipLogic == "TMDb") {
+        
+        if (!tmdbApiKey.isNullOrEmpty()) {
+            Log.d(TAG, "TMDb API key configured")
             providers.add(TMDbProvider(tmdbApiKey))
+        } else {
+            Log.d(TAG, "TMDb API key not configured, skipping")
         }
-        if (!tvdbApiKey.isNullOrEmpty() && skipLogic == "TVDB") {
+        
+        if (!tvdbApiKey.isNullOrEmpty()) {
+            Log.d(TAG, "TVDB API key configured")
             providers.add(TVDBProvider(tvdbApiKey))
+        } else {
+            Log.d(TAG, "TVDB API key not configured, skipping")
         }
-
+        
         val metadataChain = if (providers.isNotEmpty()) {
+            Log.d(TAG, "Metadata provider chain created with ${providers.size} providers")
             MetadataProviderChain(providers)
-        } else null
-
+        } else {
+            Log.d(TAG, "No metadata providers configured, using community ranges only")
+            null
+        }
+        
         return SkipRangeManager(metadataChain)
     }
 
     private fun initializePlayer() {
         val videoUrl = getVideoUrlFromIntent() ?: return
-
-        // Create a trackSelector so the TrackSelectionDialogBuilder has a target
-        trackSelector = DefaultTrackSelector(this)
-
-        player = ExoPlayer.Builder(this)
-            .setTrackSelector(trackSelector)
-            .build().apply {
-                playerView.player = this
-
-                val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
-                setMediaItem(mediaItem)
-                prepare()
-                playWhenReady = true
-
-                addListener(object : Player.Listener {
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        when (playbackState) {
-                            Player.STATE_READY -> {
-                                startPositionUpdates()
-                                applySkipLogic()
-                            }
-                            Player.STATE_ENDED -> {
-                                stopPositionUpdates()
-                            }
+        
+        player = ExoPlayer.Builder(this).build().apply {
+            playerView.player = this
+            
+            val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
+            setMediaItem(mediaItem)
+            prepare()
+            playWhenReady = true
+            
+            addListener(object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when (playbackState) {
+                        Player.STATE_READY -> {
+                            Log.d(TAG, "Player ready, starting position updates")
+                            startPositionUpdates()
+                            fetchSkipRanges()
+                        }
+                        Player.STATE_ENDED -> {
+                            Log.d(TAG, "Playback ended")
+                            stopPositionUpdates()
                         }
                     }
-                })
-            }
-    }
-
-    private fun applySkipLogic() {
-        val prefs = getSharedPreferences("tvplayer_prefs", MODE_PRIVATE)
-        val skipLogic = prefs.getString("SKIP_LOGIC", "Defaults")
-
-        when (skipLogic) {
-            "Manual" -> useManualRanges()
-            else -> fetchSkipRanges()
+                }
+            })
         }
     }
 
     private fun getVideoUrlFromIntent(): String? {
         val isExternalLaunch = Intent.ACTION_VIEW == intent.action
-
+        
         val intentData = intent.data
-        if (isValidVideoUri(intentData)) return intentData.toString()
-
+        if (isValidVideoUri(intentData)) {
+            Log.d(TAG, "Using video URL from intent data: $intentData")
+            return intentData.toString()
+        }
+        
         val extraStream = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-        if (isValidVideoUri(extraStream)) return extraStream.toString()
-
+        if (isValidVideoUri(extraStream)) {
+            Log.d(TAG, "Using video URL from extra stream: $extraStream")
+            return extraStream.toString()
+        }
+        
         if (isExternalLaunch) {
             Toast.makeText(this, "No valid video URL provided", Toast.LENGTH_LONG).show()
             finish()
             return null
         }
-
+        
+        Log.d(TAG, "Using default video URL: $VIDEO_URL")
         return VIDEO_URL
     }
 
     private fun isValidVideoUri(uri: Uri?): Boolean {
         if (uri == null) return false
+        
+        val uriString = uri.toString()
+        if (uriString.isNullOrEmpty()) return false
+        
         val scheme = uri.scheme ?: return false
+        
         return scheme == "http" || scheme == "https"
     }
 
     private fun setupSkipOverlay() {
         skipOverlay = SkipOverlay(this, skipOverlayContainer, skipRangeManager).apply {
             setOnSeekListener { seekPositionMs ->
-                player.seekTo(seekPositionMs)
+                player?.seekTo(seekPositionMs)
+                Log.d(TAG, "Seeking to position: ${seekPositionMs}ms")
             }
-            setOnNextEpisodeListener { handleNextEpisode() }
+            
+            setOnNextEpisodeListener {
+                handleNextEpisode()
+            }
         }
     }
 
     private fun fetchSkipRanges() {
         val episodeId = "game-of-thrones-1-1"
         val fileHash = "sample-hash-12345"
-
-        skipRangeManager.fetchSkipRangesWithMetadata(
-            episodeId,
-            fileHash,
-            object : SkipRangeManager.SkipRangesCallback {
-                override fun onSuccess(ranges: List<SkipRangeManager.SkipRange>) {
-                    skipOverlay?.setRanges(ranges)
-                }
-
-                override fun onError(error: Exception) {
-                    useDefaultRanges()
-                }
-            })
+        
+        Log.d(TAG, "Fetching skip ranges with metadata for episodeId: $episodeId, fileHash: $fileHash")
+        
+        skipRangeManager.fetchSkipRangesWithMetadata(episodeId, fileHash, object : SkipRangeManager.SkipRangesCallback {
+            override fun onSuccess(ranges: List<SkipRangeManager.SkipRange>) {
+                Log.d(TAG, "Successfully fetched ${ranges.size} skip ranges (validated against metadata)")
+                skipOverlay?.setRanges(ranges)
+            }
+            
+            override fun onError(error: Exception) {
+                Log.e(TAG, "Failed to fetch skip ranges, using defaults", error)
+                useDefaultRanges()
+            }
+        })
     }
 
     private fun useDefaultRanges() {
@@ -245,153 +208,61 @@ class MainActivity : AppCompatActivity() {
             SkipRangeManager.SkipRange(start = 0.0, end = 10.0, type = "cold_open"),
             SkipRangeManager.SkipRange(start = 540.0, end = 596.0, type = "credits_end")
         )
+        Log.d(TAG, "Using ${defaultRanges.size} default skip ranges")
         skipOverlay?.setRanges(defaultRanges)
-    }
-
-    private fun useManualRanges() {
-        val prefs = getSharedPreferences("tvplayer_prefs", MODE_PRIVATE)
-        val json = prefs.getString("MANUAL_SKIP_RANGES", "[]")
-        val arr = JSONArray(json)
-        val ranges = mutableListOf<SkipRangeManager.SkipRange>()
-        for (i in 0 until arr.length()) {
-            val obj = arr.getJSONObject(i)
-            ranges.add(
-                SkipRangeManager.SkipRange(
-                    start = obj.getDouble("start"),
-                    end = obj.getDouble("end"),
-                    type = obj.getString("type")
-                )
-            )
-        }
-        skipOverlay?.setRanges(ranges)
     }
 
     private fun startPositionUpdates() {
         stopPositionUpdates()
+        
         updateRunnable = object : Runnable {
             override fun run() {
-                player.let {
-                    skipOverlay?.updatePosition(it.currentPosition)
-                    updateTimeInfo()
-                    externalPlayerIntegration.broadcastPlaybackState()
+                player?.let { player ->
+                    val currentPosition = player.currentPosition
+                    skipOverlay?.updatePosition(currentPosition)
                 }
                 updateHandler.postDelayed(this, UPDATE_INTERVAL_MS)
             }
         }
+        
         updateHandler.post(updateRunnable!!)
+        Log.d(TAG, "Position updates started")
     }
 
     private fun stopPositionUpdates() {
-        updateRunnable?.let { updateHandler.removeCallbacks(it) }
+        updateRunnable?.let {
+            updateHandler.removeCallbacks(it)
+        }
         updateRunnable = null
-    }
-
-    private fun updateTimeInfo() {
-        val p = player
-        val elapsed = p.currentPosition
-        val duration = p.duration.takeIf { it > 0 } ?: return
-        val remaining = duration - elapsed
-        val speed = p.playbackParameters.speed
-
-        val adjustedRemaining = (remaining / speed).toLong()
-        val now = System.currentTimeMillis()
-        val endTime = now + adjustedRemaining
-
-        timeElapsed.text = formatTime(elapsed)
-        timeRemaining.text = "-${formatTime(remaining)}"
-        timeTotal.text = "Total: ${formatTime(duration)}"
-        timeNow.text = "Now: ${formatClock(now)}"
-        timeEnd.text = "Ends: ${formatClock(endTime)}"
-    }
-
-    private fun formatTime(ms: Long): String {
-        val totalSeconds = ms / 1000
-        val minutes = totalSeconds / 60
-        val seconds = totalSeconds % 60
-        return String.format("%d:%02d", minutes, seconds)
-    }
-
-    // AM/PM clock formatting for readability
-    private fun formatClock(ms: Long): String {
-        val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        return sdf.format(Date(ms))
+        Log.d(TAG, "Position updates stopped")
     }
 
     private fun handleNextEpisode() {
-        Toast.makeText(this, "Next Episode feature not implemented", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            "Next Episode - This will be wired to Syncler/Stremio metadata",
+            Toast.LENGTH_LONG
+        ).show()
+        
+        Log.d(TAG, "Next episode triggered - awaiting metadata integration")
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
+    override fun onStart() {
+        super.onStart()
+        player?.playWhenReady = true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
-                true
-            }
-            R.id.action_manual_skip -> {
-                startActivity(Intent(this, ManualSkipEditorActivity::class.java))
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        refreshExternalPlayerIntegration()
-    }
-
-    private fun refreshExternalPlayerIntegration() {
-        val prefs = getSharedPreferences("tvplayer_prefs", MODE_PRIVATE)
-        val enabled = prefs.getBoolean("pref_integrate_external_players", false)
-        val mode = PlayerIntegrationMode.fromPreference(enabled)
-
-        externalPlayerIntegration = ExternalPlayerIntegration(this, mode)
-        externalPlayerIntegration.setTelemetryProvider(object : PlaybackTelemetryProvider {
-            override fun getPlaybackTelemetry(): PlaybackTelemetry? {
-                val p = player
-                return PlaybackTelemetry(
-                    currentPosition = p.currentPosition,
-                    duration = p.duration.takeIf { it > 0 } ?: 0,
-                    playbackSpeed = p.playbackParameters.speed,
-                    isPlaying = p.isPlaying
-                )
-            }
-
-            override fun getTimeInfo(): TimeInfo? {
-                val p = player
-                val elapsed = p.currentPosition
-                val duration = p.duration.takeIf { it > 0 } ?: return null
-                val remaining = duration - elapsed
-                val speed = p.playbackParameters.speed
-                val adjustedRemaining = (remaining / speed).toLong()
-                val now = System.currentTimeMillis()
-                val endTime = now + adjustedRemaining
-
-                return TimeInfo(
-                    elapsed = formatTime(elapsed),
-                    remaining = formatTime(remaining),
-                    total = formatTime(duration),
-                    currentTime = formatClock(now),
-                    endTime = formatClock(endTime)
-                )
-            }
-
-            override fun getSkipRanges(): List<SkipRangeInfo> {
-                return skipOverlay?.getRanges()?.map {
-                    SkipRangeInfo(start = it.start, end = it.end, type = it.type)
-                } ?: emptyList()
-            }
-        })
+    override fun onStop() {
+        super.onStop()
+        player?.playWhenReady = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         stopPositionUpdates()
-        player.release()
+        skipOverlay?.cleanup()
+        player?.release()
+        player = null
+        Log.d(TAG, "Activity destroyed, resources released")
     }
 }
