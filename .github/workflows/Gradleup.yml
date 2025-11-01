@@ -1,3 +1,8 @@
+name: Update Gradle Wrapper
+
+on:
+  workflow_dispatch:
+
 jobs:
   update-gradle:
     runs-on: ubuntu-latest
@@ -10,7 +15,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-
+          
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
 
