@@ -13,16 +13,20 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.android.exoplayer2.ui.TrackSelectionDialogBuilder
 import com.tvplayer.app.skip.*
 import com.tvplayer.app.integration.*
 import org.json.JSONArray
+import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var playerView: StyledPlayerView
-    private var player: ExoPlayer? = null
+    private lateinit var player: ExoPlayer
+    private lateinit var trackSelector: DefaultTrackSelector
     private lateinit var skipOverlayContainer: FrameLayout
 
     private lateinit var skipRangeManager: SkipRangeManager
@@ -55,49 +59,7 @@ class MainActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         skipOverlayContainer = findViewById(R.id.skipOverlayContainer)
 
-        // ------------ Inserted custom controls wiring starts here ------------
-
-// Playback speed button (now a TextView)
-val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
-val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
-var speedIndex = 1 // start at 1x
-speedButton?.text = "${speeds[speedIndex]}x"
-
-speedButton?.setOnClickListener {
-    speedIndex = (speedIndex + 1) % speeds.size
-    val newSpeed = speeds[speedIndex]
-    player.setPlaybackSpeed(newSpeed)
-    speedButton.text = "${newSpeed}x"
-}
-// Audio/Subtitles button
-val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
-trackButton?.setOnClickListener {
-    val exoPlayer = playerView.player as? com.google.android.exoplayer2.ExoPlayer
-    val trackSelector = exoPlayer?.trackSelector
-    if (trackSelector != null) {
-        TrackSelectionDialogBuilder(
-            this,
-            "Select Tracks",
-            trackSelector,
-            /* rendererIndex = */ 0
-        ).build().show()
-    }
-}
-
-// Time labels with AM/PM formatting
-val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
-player.addListener(object : Player.Listener {
-    override fun onEvents(p: Player, events: Player.Events) {
-        val now = System.currentTimeMillis()
-        timeNow?.text = "Now: ${sdf.format(Date(now))}"
-        if (p.duration != com.google.android.exoplayer2.C.TIME_UNSET) {
-            val end = now + (p.duration - p.currentPosition)
-            timeEnd?.text = "Ends: ${sdf.format(Date(end))}"
-        }
-    }
-})
-// ------------ Inserted custom controls wiring ends here ------------
-
+        // Assign time views before wiring
         timeElapsed = playerView.findViewById(R.id.timeElapsed)
         timeRemaining = playerView.findViewById(R.id.timeRemaining)
         timeTotal = playerView.findViewById(R.id.timeTotal)
@@ -105,15 +67,43 @@ player.addListener(object : Player.Listener {
         timeEnd = playerView.findViewById(R.id.timeEnd)
         timeInfoLayout = playerView.findViewById(R.id.timeInfoLayout)
 
-        playerView.setControllerVisibilityListener(
-    StyledPlayerView.ControllerVisibilityListener { visibility ->
-        if (visibility == View.VISIBLE) {
-            // controls are showing
-        } else {
-            // controls are hidden
+        // ------------ Custom controls wiring starts here ------------
+
+        // Playback speed button (TextView)
+        val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
+        val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
+        var speedIndex = 1 // start at 1x
+        speedButton?.text = "${speeds[speedIndex]}x"
+
+        speedButton?.setOnClickListener {
+            speedIndex = (speedIndex + 1) % speeds.size
+            val newSpeed = speeds[speedIndex]
+            player.setPlaybackSpeed(newSpeed)
+            speedButton.text = "${newSpeed}x"
         }
-    }
-) 
+
+        // Audio/Subtitles button (opens ExoPlayer track selection dialog)
+        val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
+        trackButton?.setOnClickListener {
+            TrackSelectionDialogBuilder(
+                this,
+                "Select Tracks",
+                trackSelector,
+                /* rendererIndex = */ 0
+            ).build().show()
+        }
+
+        // ------------ Custom controls wiring ends here ------------
+
+        playerView.setControllerVisibilityListener(
+            StyledPlayerView.ControllerVisibilityListener { visibility ->
+                if (visibility == View.VISIBLE) {
+                    // controls are showing
+                } else {
+                    // controls are hidden
+                }
+            }
+        )
 
         skipRangeManager = createSkipRangeManager()
 
@@ -155,28 +145,33 @@ player.addListener(object : Player.Listener {
     private fun initializePlayer() {
         val videoUrl = getVideoUrlFromIntent() ?: return
 
-        player = ExoPlayer.Builder(this).build().apply {
-            playerView.player = this
+        // Create a trackSelector so the TrackSelectionDialogBuilder has a target
+        trackSelector = DefaultTrackSelector(this)
 
-            val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
-            setMediaItem(mediaItem)
-            prepare()
-            playWhenReady = true
+        player = ExoPlayer.Builder(this)
+            .setTrackSelector(trackSelector)
+            .build().apply {
+                playerView.player = this
 
-            addListener(object : Player.Listener {
-                override fun onPlaybackStateChanged(playbackState: Int) {
-                    when (playbackState) {
-                        Player.STATE_READY -> {
-                            startPositionUpdates()
-                            applySkipLogic()
-                        }
-                        Player.STATE_ENDED -> {
-                            stopPositionUpdates()
+                val mediaItem = MediaItem.fromUri(Uri.parse(videoUrl))
+                setMediaItem(mediaItem)
+                prepare()
+                playWhenReady = true
+
+                addListener(object : Player.Listener {
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        when (playbackState) {
+                            Player.STATE_READY -> {
+                                startPositionUpdates()
+                                applySkipLogic()
+                            }
+                            Player.STATE_ENDED -> {
+                                stopPositionUpdates()
+                            }
                         }
                     }
-                }
-            })
-        }
+                })
+            }
     }
 
     private fun applySkipLogic() {
@@ -216,7 +211,7 @@ player.addListener(object : Player.Listener {
     private fun setupSkipOverlay() {
         skipOverlay = SkipOverlay(this, skipOverlayContainer, skipRangeManager).apply {
             setOnSeekListener { seekPositionMs ->
-                player?.seekTo(seekPositionMs)
+                player.seekTo(seekPositionMs)
             }
             setOnNextEpisodeListener { handleNextEpisode() }
         }
@@ -270,7 +265,7 @@ player.addListener(object : Player.Listener {
         stopPositionUpdates()
         updateRunnable = object : Runnable {
             override fun run() {
-                player?.let {
+                player.let {
                     skipOverlay?.updatePosition(it.currentPosition)
                     updateTimeInfo()
                     externalPlayerIntegration.broadcastPlaybackState()
@@ -287,7 +282,7 @@ player.addListener(object : Player.Listener {
     }
 
     private fun updateTimeInfo() {
-        val p = player ?: return
+        val p = player
         val elapsed = p.currentPosition
         val duration = p.duration.takeIf { it > 0 } ?: return
         val remaining = duration - elapsed
@@ -311,11 +306,10 @@ player.addListener(object : Player.Listener {
         return String.format("%d:%02d", minutes, seconds)
     }
 
+    // AM/PM clock formatting for readability
     private fun formatClock(ms: Long): String {
-        val cal = Calendar.getInstance().apply { timeInMillis = ms }
-        val hour = cal.get(Calendar.HOUR_OF_DAY)
-        val minute = cal.get(Calendar.MINUTE)
-        return String.format("%d:%02d", hour, minute)
+        val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+        return sdf.format(Date(ms))
     }
 
     private fun handleNextEpisode() {
@@ -354,7 +348,7 @@ player.addListener(object : Player.Listener {
         externalPlayerIntegration = ExternalPlayerIntegration(this, mode)
         externalPlayerIntegration.setTelemetryProvider(object : PlaybackTelemetryProvider {
             override fun getPlaybackTelemetry(): PlaybackTelemetry? {
-                val p = player ?: return null
+                val p = player
                 return PlaybackTelemetry(
                     currentPosition = p.currentPosition,
                     duration = p.duration.takeIf { it > 0 } ?: 0,
@@ -364,7 +358,7 @@ player.addListener(object : Player.Listener {
             }
 
             override fun getTimeInfo(): TimeInfo? {
-                val p = player ?: return null
+                val p = player
                 val elapsed = p.currentPosition
                 val duration = p.duration.takeIf { it > 0 } ?: return null
                 val remaining = duration - elapsed
@@ -393,7 +387,6 @@ player.addListener(object : Player.Listener {
     override fun onDestroy() {
         super.onDestroy()
         stopPositionUpdates()
-        player?.release()
-        player = null
+        player.release()
     }
 }
