@@ -67,33 +67,38 @@ class MainActivity : AppCompatActivity() {
         timeEnd = playerView.findViewById(R.id.timeEnd)
         timeInfoLayout = playerView.findViewById(R.id.timeInfoLayout)
 
-        // ------------ Custom controls wiring starts here ------------
+// ------------ Custom controls wiring starts here ------------
 
-        // Playback speed button (TextView)
-        val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
-        val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
-        var speedIndex = 1 // start at 1x
-        speedButton?.text = "${speeds[speedIndex]}x"
+    // Make sure these are assigned earlier in onCreate:
+    timeElapsed = playerView.findViewById(R.id.timeElapsed)
+    timeRemaining = playerView.findViewById(R.id.timeRemaining)
+    timeTotal = playerView.findViewById(R.id.timeTotal)
 
-        speedButton?.setOnClickListener {
-            speedIndex = (speedIndex + 1) % speeds.size
-            val newSpeed = speeds[speedIndex]
-            player.setPlaybackSpeed(newSpeed)
-            speedButton.text = "${newSpeed}x"
-        }
+    // Playback speed button (TextView)
+    val speedButton = playerView.findViewById<TextView>(R.id.exo_playback_speed)
+    val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
+    var speedIndex = 1 // start at 1x
+    speedButton?.text = "${speeds[speedIndex]}x"
 
-        // Audio/Subtitles button (opens ExoPlayer track selection dialog)
-        val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
-        trackButton?.setOnClickListener {
-            TrackSelectionDialogBuilder(
-                this,
-                "Select Tracks",
-                trackSelector,
-                /* rendererIndex = */ 0
-            ).build().show()
-        }
+    speedButton?.setOnClickListener {
+        speedIndex = (speedIndex + 1) % speeds.size
+        val newSpeed = speeds[speedIndex]
+        player.setPlaybackSpeed(newSpeed)
+        speedButton.text = "${newSpeed}x"
+    }
 
-        // ------------ Custom controls wiring ends here ------------
+    // Audio/Subtitles button (opens ExoPlayer track selection dialog)
+    val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
+    trackButton?.setOnClickListener {
+        TrackSelectionDialogBuilder(
+            this,
+            "Select Tracks",
+            player,              // ✅ fixed: use player, not trackSelector
+            /* rendererIndex = */ 0
+        ).build().show()
+    }
+
+// ------------ Custom controls wiring ends here ------------
 
         playerView.setControllerVisibilityListener(
             StyledPlayerView.ControllerVisibilityListener { visibility ->
