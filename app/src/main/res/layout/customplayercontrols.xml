@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent">
+
+        <!-- Center controls row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="4dp">
+
+            <ImageButton
+                android:id="@id/exo_rew"
+                style="@style/ExoStyledControls.Button.Center.Previous" />
+
+            <ImageButton
+                android:id="@id/exo_play_pause"
+                style="@style/ExoStyledControls.Button.Center.PlayPause" />
+
+            <ImageButton
+                android:id="@id/exo_ffwd"
+                style="@style/ExoStyledControls.Button.Center.Next" />
+
+            <!-- Playback speed button -->
+            <TextView
+                android:id="@+id/exo_playback_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:text="1x"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Playback speed" />
+            
+            <!-- Audio/Subtitles button -->
+            <ImageButton
+                android:id="@+id/exo_track_selection"
+                style="@style/ExoStyledControls.Button"
+                android:src="@drawable/ic_subtitles"
+                android:contentDescription="Audio/Subtitles" />
+        </LinearLayout>
+
+        <!-- Progress bar row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:id="@id/exo_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:paddingEnd="4dp" />
+
+            <com.google.android.exoplayer2.ui.DefaultTimeBar
+                android:id="@id/exo_progress"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="26dp" />
+
+            <TextView
+                android:id="@id/exo_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:paddingStart="4dp" />
+        </LinearLayout>
+
+        <!-- Time info row at the very bottom -->
+        <LinearLayout
+            android:id="@+id/timeInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/timeNow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Now: 12:34 PM"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="16dp" />
+
+            <TextView
+                android:id="@+id/timeEnd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ends: 1:41 PM"
+                android:textSize="16sp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

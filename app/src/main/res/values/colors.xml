@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#1A1A1A</color>
+<color name="timeElapsedColor">#4CAF50</color>   <!-- green -->
+<color name="timeRemainingColor">#F44336</color> <!-- red -->
+<color name="timeTotalColor">#9E9E9E</color>    <!-- grey -->
+<color name="timeNowColor">#2196F3</color>      <!-- blue -->
+<color name="timeEndColor">#FF9800</color>      <!-- orange -->
+</resources>
