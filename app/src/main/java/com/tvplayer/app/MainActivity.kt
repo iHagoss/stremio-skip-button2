@@ -62,9 +62,15 @@ class MainActivity : AppCompatActivity() {
         timeEnd = playerView.findViewById(R.id.timeEnd)
         timeInfoLayout = playerView.findViewById(R.id.timeInfoLayout)
 
-        playerView.setControllerVisibilityListener { visibility ->
-            timeInfoLayout.visibility = if (visibility == View.VISIBLE) View.VISIBLE else View.GONE
+        playerView.setControllerVisibilityListener(
+    StyledPlayerView.ControllerVisibilityListener { visibility ->
+        if (visibility == View.VISIBLE) {
+            // controls are showing
+        } else {
+            // controls are hidden
         }
+    }
+) 
 
         skipRangeManager = createSkipRangeManager()
 
