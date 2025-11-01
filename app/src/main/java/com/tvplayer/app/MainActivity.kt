@@ -55,6 +55,48 @@ class MainActivity : AppCompatActivity() {
         playerView = findViewById(R.id.player_view)
         skipOverlayContainer = findViewById(R.id.skipOverlayContainer)
 
+        // ------------ Inserted custom controls wiring starts here ------------
+
+// Playback speed button
+val speedButton = playerView.findViewById<ImageButton>(R.id.exo_playback_speed)
+val speeds = floatArrayOf(0.5f, 1f, 1.25f, 1.5f, 2f)
+var speedIndex = 1 // start at 1x
+speedButton?.setOnClickListener {
+    speedIndex = (speedIndex + 1) % speeds.size
+    val newSpeed = speeds[speedIndex]
+    player.setPlaybackSpeed(newSpeed)
+    Toast.makeText(this, "${newSpeed}x", Toast.LENGTH_SHORT).show()
+}
+
+// Audio/Subtitles button
+val trackButton = playerView.findViewById<ImageButton>(R.id.exo_track_selection)
+trackButton?.setOnClickListener {
+    val exoPlayer = playerView.player as? com.google.android.exoplayer2.ExoPlayer
+    val trackSelector = exoPlayer?.trackSelector
+    if (trackSelector != null) {
+        TrackSelectionDialogBuilder(
+            this,
+            "Select Tracks",
+            trackSelector,
+            /* rendererIndex = */ 0
+        ).build().show()
+    }
+}
+
+// Time labels with AM/PM formatting
+val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
+player.addListener(object : Player.Listener {
+    override fun onEvents(p: Player, events: Player.Events) {
+        val now = System.currentTimeMillis()
+        timeNow?.text = "Now: ${sdf.format(Date(now))}"
+        if (p.duration != com.google.android.exoplayer2.C.TIME_UNSET) {
+            val end = now + (p.duration - p.currentPosition)
+            timeEnd?.text = "Ends: ${sdf.format(Date(end))}"
+        }
+    }
+})
+// ------------ Inserted custom controls wiring ends here ------------
+
         timeElapsed = playerView.findViewById(R.id.timeElapsed)
         timeRemaining = playerView.findViewById(R.id.timeRemaining)
         timeTotal = playerView.findViewById(R.id.timeTotal)
