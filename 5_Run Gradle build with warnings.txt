@@ -1,0 +1,133 @@
+﻿2025-11-01T02:57:34.8041850Z ##[group]Run ./gradlew clean build --warning-mode all
+2025-11-01T02:57:34.8043489Z [36;1m./gradlew clean build --warning-mode all[0m
+2025-11-01T02:57:34.8078849Z shell: /usr/bin/bash -e {0}
+2025-11-01T02:57:34.8079879Z env:
+2025-11-01T02:57:34.8081321Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.17-10/x64
+2025-11-01T02:57:34.8083566Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.17-10/x64
+2025-11-01T02:57:34.8085267Z ##[endgroup]
+2025-11-01T02:57:35.0152894Z Downloading https://services.gradle.org/distributions/gradle-9.2.0-all.zip
+2025-11-01T02:57:37.3863033Z ......................10%......................20%......................30%.......................40%......................50%......................60%......................70%.......................80%......................90%......................100%
+2025-11-01T02:57:40.7441505Z 
+2025-11-01T02:57:40.7442685Z Welcome to Gradle 9.2.0!
+2025-11-01T02:57:40.7446206Z 
+2025-11-01T02:57:40.7446940Z Here are the highlights of this release:
+2025-11-01T02:57:40.7447701Z  - Windows ARM support
+2025-11-01T02:57:40.7448027Z  - Improved publishing APIs
+2025-11-01T02:57:40.7459444Z  - Better guidance for dependency verification failures
+2025-11-01T02:57:40.7460002Z 
+2025-11-01T02:57:40.7460414Z For more details see https://docs.gradle.org/9.2.0/release-notes.html
+2025-11-01T02:57:40.7461238Z 
+2025-11-01T02:57:40.8409871Z To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.2.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+2025-11-01T02:57:42.2363293Z Daemon will be stopped at the end of the build 
+2025-11-01T02:58:25.7365866Z 
+2025-11-01T02:58:25.7381071Z > Configure project :app
+2025-11-01T02:58:25.7397647Z Declaring dependencies using multi-string notation has been deprecated. This will fail with an error in Gradle 10. Please use single-string notation instead: "com.android.tools.lint:lint-gradle:31.10.1". Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_9.html#dependency_multi_string_notation
+2025-11-01T02:58:25.7412281Z Declaring dependencies using multi-string notation has been deprecated. This will fail with an error in Gradle 10. Please use single-string notation instead: "com.android.tools.build:aapt2:8.10.1-12782657:linux". Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_9.html#dependency_multi_string_notation
+2025-11-01T02:58:25.7422124Z Declaring 'crunchPngs' as a property using an 'is-' method with a Boolean type on com.android.build.gradle.internal.dsl.BuildType$AgpDecorated has been deprecated. Starting with Gradle 10, this property will no longer be treated like a property. The combination of method name and return type is not consistent with Java Bean property rules. Add a method named 'getCrunchPngs' with the same behavior and mark the old one with @Deprecated, or change the type of 'com.android.build.gradle.internal.dsl.BuildType$AgpDecorated.isCrunchPngs' (and the setter) to 'boolean'. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_boolean_properties
+2025-11-01T02:58:25.7429655Z Declaring 'useProguard' as a property using an 'is-' method with a Boolean type on com.android.build.gradle.internal.dsl.BuildType has been deprecated. Starting with Gradle 10, this property will no longer be treated like a property. The combination of method name and return type is not consistent with Java Bean property rules. Add a method named 'getUseProguard' with the same behavior and mark the old one with @Deprecated, or change the type of 'com.android.build.gradle.internal.dsl.BuildType.isUseProguard' (and the setter) to 'boolean'. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_boolean_properties
+2025-11-01T02:58:25.7433483Z The StartParameter.isConfigurationCacheRequested property has been deprecated. This is scheduled to be removed in Gradle 10. Please use 'configurationCache.requested' property on 'BuildFeatures' service instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#deprecated_startparameter_is_configuration_cache_requested
+2025-11-01T02:58:26.1381761Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 7
+2025-11-01T02:58:26.1388688Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('namespace = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.1393066Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:7)
+2025-11-01T02:58:26.1397694Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.1399278Z 	at build_31ztz6lodyz4ijg23cnmwmzhf.run(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:6)
+2025-11-01T02:58:26.1401005Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.1402308Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 8
+2025-11-01T02:58:26.1451864Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('compileSdk = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.1455286Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:8)
+2025-11-01T02:58:26.1456694Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.1458346Z 	at build_31ztz6lodyz4ijg23cnmwmzhf.run(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:6)
+2025-11-01T02:58:26.1459471Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2379023Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 12
+2025-11-01T02:58:26.2397494Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('minSdk = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.2403312Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1$_closure3.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:12)
+2025-11-01T02:58:26.2413433Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2416241Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:10)
+2025-11-01T02:58:26.2419160Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2472557Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 13
+2025-11-01T02:58:26.2476224Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('targetSdk = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.2480335Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1$_closure3.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:13)
+2025-11-01T02:58:26.2482419Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2484011Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:10)
+2025-11-01T02:58:26.2485845Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2487047Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 21
+2025-11-01T02:58:26.2490296Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('shrinkResources = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.2494191Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1$_closure4$_closure8.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:21)
+2025-11-01T02:58:26.2496023Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2497635Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1$_closure4.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:19)
+2025-11-01T02:58:26.2499373Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2500654Z Build file '/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle': line 36
+2025-11-01T02:58:26.2504259Z Properties should be assigned using the 'propName = value' syntax. Setting a property via the Gradle-generated 'propName value' or 'propName(value)' syntax in Groovy DSL has been deprecated. This is scheduled to be removed in Gradle 10. Use assignment ('viewBinding = <value>') instead. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_space_assignment_syntax
+2025-11-01T02:58:26.2508313Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1$_closure7.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:36)
+2025-11-01T02:58:26.2541717Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.2543580Z 	at build_31ztz6lodyz4ijg23cnmwmzhf$_run_closure1.doCall$original(/home/runner/work/stremio-skip-button2/stremio-skip-button2/app/build.gradle:35)
+2025-11-01T02:58:26.2545442Z 	(Run with --stacktrace to get the full stack trace of this deprecation warning.)
+2025-11-01T02:58:26.4370231Z Declaring 'wearAppUnbundled' as a property using an 'is-' method with a Boolean type on com.android.build.api.variant.impl.ApplicationVariantImpl has been deprecated. Starting with Gradle 10, this property will no longer be treated like a property. The combination of method name and return type is not consistent with Java Bean property rules. Add a method named 'getWearAppUnbundled' with the same behavior and mark the old one with @Deprecated, or change the type of 'com.android.build.api.variant.impl.ApplicationVariantImpl.isWearAppUnbundled' (and the setter) to 'boolean'. Consult the upgrading guide for further information: https://docs.gradle.org/9.2.0/userguide/upgrading_version_8.html#groovy_boolean_properties
+2025-11-01T02:58:29.1365678Z 
+2025-11-01T02:58:29.1389474Z > Task :clean UP-TO-DATE
+2025-11-01T02:58:29.1389948Z > Task :app:clean UP-TO-DATE
+2025-11-01T02:58:29.1390357Z > Task :app:preBuild UP-TO-DATE
+2025-11-01T02:58:29.1390941Z > Task :app:preDebugBuild UP-TO-DATE
+2025-11-01T02:58:29.1391464Z > Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+2025-11-01T02:58:29.1392110Z > Task :app:checkKotlinGradlePluginConfigurationErrors
+2025-11-01T02:58:41.0361744Z 
+2025-11-01T02:58:41.0364550Z > Task :app:dataBindingMergeDependencyArtifactsDebug
+2025-11-01T02:58:41.0369019Z WARNING: [Processor] Library '/home/runner/.gradle/caches/modules-2/files-2.1/com.google.android.exoplayer/exoplayer-ui/2.19.1/f2854c993ee7c931a9970c22ca8a35ace6b3d9af/exoplayer-ui-2.19.1.aar' contains references to both AndroidX and old support library. This seems like the library is partially migrated. Jetifier will try to rewrite the library anyway.
+2025-11-01T02:58:41.0374007Z  Example of androidX reference: 'androidx/core/app/NotificationCompat$Builder'
+2025-11-01T02:58:41.0375014Z  Example of support library reference: 'android/support/v4/media/session/MediaSessionCompat$Token'
+2025-11-01T02:58:43.2361444Z 
+2025-11-01T02:58:43.2366554Z > Task :app:generateDebugResValues
+2025-11-01T02:58:43.2371830Z > Task :app:generateDebugResources
+2025-11-01T02:58:45.7360612Z > Task :app:packageDebugResources
+2025-11-01T02:58:45.8360548Z > Task :app:mergeDebugResources
+2025-11-01T02:58:46.7360564Z > Task :app:parseDebugLocalResources
+2025-11-01T02:58:46.8360948Z > Task :app:checkDebugAarMetadata
+2025-11-01T02:58:47.3364327Z > Task :app:dataBindingGenBaseClassesDebug
+2025-11-01T02:58:47.3364946Z > Task :app:mapDebugSourceSetPaths
+2025-11-01T02:58:47.3365447Z > Task :app:createDebugCompatibleScreenManifests
+2025-11-01T02:58:47.3365971Z > Task :app:extractDeepLinksDebug
+2025-11-01T02:58:47.5362458Z > Task :app:processDebugMainManifest
+2025-11-01T02:58:47.7364617Z > Task :app:processDebugManifest
+2025-11-01T02:58:47.7383944Z > Task :app:javaPreCompileDebug
+2025-11-01T02:58:47.7384436Z > Task :app:mergeDebugShaders
+2025-11-01T02:58:47.7384877Z > Task :app:compileDebugShaders NO-SOURCE
+2025-11-01T02:58:47.7385343Z > Task :app:generateDebugAssets UP-TO-DATE
+2025-11-01T02:58:47.8362609Z > Task :app:mergeDebugAssets
+2025-11-01T02:58:47.8367874Z > Task :app:compressDebugAssets
+2025-11-01T02:58:47.8368333Z > Task :app:processDebugManifestForPackage
+2025-11-01T02:58:49.9362046Z > Task :app:processDebugResources
+2025-11-01T02:58:52.4428588Z > Task :app:desugarDebugFileDependencies
+2025-11-01T02:58:55.6365592Z > Task :app:mergeDebugJniLibFolders
+2025-11-01T02:58:55.6366193Z > Task :app:checkDebugDuplicateClasses
+2025-11-01T02:58:55.7413609Z > Task :app:mergeDebugNativeLibs NO-SOURCE
+2025-11-01T02:59:15.4393596Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:69:11 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ExoPlayer?
+2025-11-01T02:59:15.4395166Z 
+2025-11-01T02:59:15.4395528Z > Task :app:compileDebugKotlin
+2025-11-01T02:59:15.4397464Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:78:9 Unresolved reference: TrackSelectionDialogBuilder
+2025-11-01T02:59:15.4399897Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:88:11 Unresolved reference: SimpleDateFormat
+2025-11-01T02:59:15.4402591Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:89:7 Only safe (?.) or non-null asserted (!!.) calls are allowed on a nullable receiver of type ExoPlayer?
+2025-11-01T02:59:15.4405112Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:101:52 Unresolved reference: timeElapsed
+2025-11-01T02:59:15.4407310Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:102:54 Unresolved reference: timeRemaining
+2025-11-01T02:59:15.4410413Z e: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/app/src/main/java/com/tvplayer/app/MainActivity.kt:103:50 Unresolved reference: timeTotal
+2025-11-01T02:59:25.7383237Z 
+2025-11-01T02:59:25.7384199Z > Task :app:mergeExtDexDebug
+2025-11-01T02:59:32.6361307Z > Task :app:compileDebugKotlin FAILED
+2025-11-01T02:59:44.1359673Z 
+2025-11-01T02:59:44.1359799Z 
+2025-11-01T02:59:44.1360623Z FAILURE: Build failed with an exception.
+2025-11-01T02:59:44.1394338Z [Incubating] Problems report is available at: file:///home/runner/work/stremio-skip-button2/stremio-skip-button2/build/reports/problems/problems-report.html
+2025-11-01T02:59:44.1395430Z 
+2025-11-01T02:59:44.1395573Z * What went wrong:
+2025-11-01T02:59:44.1396026Z Execution failed for task ':app:compileDebugKotlin'.
+2025-11-01T02:59:44.1397247Z > A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+2025-11-01T02:59:44.1398490Z    > Compilation error. See log for more details
+2025-11-01T02:59:44.1398852Z 
+2025-11-01T02:59:44.1398969Z * Try:
+2025-11-01T02:59:44.1399349Z > Run with --stacktrace option to get the stack trace.
+2025-11-01T02:59:44.1399970Z > Run with --info or --debug option to get more log output.
+2025-11-01T02:59:44.1400632Z > Run with --scan to generate a Build Scan (powered by Develocity).
+2025-11-01T02:59:44.1401531Z > Get more help at https://help.gradle.org.
+2025-11-01T02:59:44.1401889Z 
+2025-11-01T02:59:44.1402031Z BUILD FAILED in 2m 9s
+2025-11-01T02:59:44.1402417Z 27 actionable tasks: 25 executed, 2 up-to-date
+2025-11-01T02:59:44.6149750Z ##[error]Process completed with exit code 1.
