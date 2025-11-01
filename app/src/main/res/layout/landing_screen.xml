@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_tv"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="48dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/primary"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/landing_welcome"
+        android:textColor="@color/text_primary_tv"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:layout_marginBottom="48dp" />
+
+    <Button
+        android:id="@+id/open_settings_button"
+        style="@style/TVButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/open_settings"
+        android:textSize="28sp"
+        android:paddingHorizontal="48dp"
+        android:paddingVertical="20dp"
+        android:layout_marginBottom="16dp"
+        android:requestFocus="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/landing_instructions"
+        android:textColor="@color/text_secondary_tv"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:layout_marginTop="32dp" />
+
+</LinearLayout>

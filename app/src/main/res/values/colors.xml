@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primary">#FF6200EE</color>
+    <color name="primary_dark">#FF3700B3</color>
+    <color name="accent">#FF03DAC5</color>
+    <color name="background_tv">#FF000000</color>
+    <color name="text_primary_tv">#FFFFFFFF</color>
+    <color name="text_secondary_tv">#B3FFFFFF</color>
+    <color name="button_focused">#FF6200EE</color>
+    <color name="button_normal">#80FFFFFF</color>
+    <color name="overlay_background">#E6000000</color>
+</resources>

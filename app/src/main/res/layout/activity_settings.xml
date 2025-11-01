@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_tv"
+    android:padding="32dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_api_keys"
+            android:textColor="@color/accent"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/trakt_api_key"
+            android:textColor="@color/text_primary_tv"
+            android:textSize="22sp"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/trakt_api_key_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/trakt_api_key_hint"
+            android:textColor="@color/white"
+            android:textColorHint="@color/text_secondary_tv"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tmdb_api_key"
+            android:textColor="@color/text_primary_tv"
+            android:textSize="22sp"
+            android:layout_marginTop="24dp" />
+
+        <EditText
+            android:id="@+id/tmdb_api_key_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/tmdb_api_key_hint"
+            android:textColor="@color/white"
+            android:textColorHint="@color/text_secondary_tv"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/skip_marker_api_url"
+            android:textColor="@color/text_primary_tv"
+            android:textSize="22sp"
+            android:layout_marginTop="24dp" />
+
+        <EditText
+            android:id="@+id/skip_marker_api_url_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/skip_marker_api_url_hint"
+            android:textColor="@color/white"
+            android:textColorHint="@color/text_secondary_tv"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/edit_text_background" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_features"
+            android:textColor="@color/accent"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/enable_skip_markers_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/enable_skip_markers"
+            android:textColor="@color/text_primary_tv"
+            android:textSize="22sp"
+            android:padding="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/settings_playback"
+            android:textColor="@color/accent"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/default_playback_speed"
+            android:textColor="@color/text_primary_tv"
+            android:textSize="22sp"
+            android:layout_marginTop="8dp" />
+
+        <Spinner
+            android:id="@+id/playback_speed_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:background="@drawable/spinner_background" />
+
+        <Button
+            android:id="@+id/save_settings_button"
+            style="@style/TVButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="Save Settings"
+            android:textSize="24sp" />
+
+    </LinearLayout>
+
+</ScrollView>

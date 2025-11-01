@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Player</string>
+    <string name="settings_title">Settings</string>
+    
+    <!-- Time Display -->
+    <string name="elapsed_time">Elapsed: %s</string>
+    <string name="remaining_time">Remaining: %s</string>
+    <string name="total_duration">Duration: %s</string>
+    <string name="current_time">Now: %s</string>
+    <string name="estimated_end">Ends at: %s</string>
+    
+    <!-- Skip Buttons -->
+    <string name="skip_intro">Skip Intro</string>
+    <string name="skip_credits">Skip Credits</string>
+    
+    <!-- Settings -->
+    <string name="settings_api_keys">API Keys</string>
+    <string name="trakt_api_key">Trakt API Key</string>
+    <string name="trakt_api_key_hint">Enter Trakt API key</string>
+    <string name="tmdb_api_key">TMDB API Key</string>
+    <string name="tmdb_api_key_hint">Enter TMDB API key</string>
+    
+    <string name="settings_features">Features</string>
+    <string name="enable_skip_markers">Enable Skip Intro/Credits</string>
+    <string name="skip_markers_summary">Automatically detect and skip intro/credits</string>
+    
+    <string name="settings_playback">Playback</string>
+    <string name="default_playback_speed">Default Playback Speed</string>
+    <string name="playback_speed_normal">Normal (1.0x)</string>
+    <string name="playback_speed_125">1.25x</string>
+    <string name="playback_speed_150">1.5x</string>
+    <string name="playback_speed_175">1.75x</string>
+    <string name="playback_speed_200">2.0x</string>
+    
+    <string name="skip_marker_api_url">Skip Marker API URL</string>
+    <string name="skip_marker_api_url_hint">https://api.example.com/markers</string>
+    
+    <!-- Landing Screen -->
+    <string name="landing_welcome">Welcome to Smart Player!\n\nThis app works as an external player for apps like Stremio and Syncler+.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="landing_instructions">Configure your API keys and preferences in Settings,\nthen launch videos from your media apps.</string>
+    
+    <!-- Errors -->
+    <string name="error_no_video_url">No video URL provided</string>
+    <string name="error_playback_failed">Playback failed</string>
+</resources>

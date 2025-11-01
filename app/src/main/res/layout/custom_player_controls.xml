@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@color/overlay_background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@id/exo_prev"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:focusable="true"
+            android:src="@drawable/exo_legacy_controls_previous"
+            android:contentDescription="Previous" />
+
+        <ImageButton
+            android:id="@id/exo_rew"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:focusable="true"
+            android:src="@drawable/exo_legacy_controls_rewind"
+            android:contentDescription="Rewind" />
+
+        <ImageButton
+            android:id="@id/exo_play_pause"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_margin="8dp"
+            android:focusable="true"
+            android:src="@drawable/exo_legacy_controls_play"
+            android:contentDescription="Play/Pause" />
+
+        <ImageButton
+            android:id="@id/exo_ffwd"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:focusable="true"
+            android:src="@drawable/exo_legacy_controls_fastforward"
+            android:contentDescription="Fast Forward" />
+
+        <ImageButton
+            android:id="@id/exo_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:focusable="true"
+            android:src="@drawable/exo_legacy_controls_next"
+            android:contentDescription="Next" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@id/exo_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</LinearLayout>

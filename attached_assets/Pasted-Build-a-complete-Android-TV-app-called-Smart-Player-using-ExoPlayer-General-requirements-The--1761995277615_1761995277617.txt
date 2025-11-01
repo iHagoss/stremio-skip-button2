@@ -1,0 +1,57 @@
+Build a complete Android TV app called "Smart Player" using ExoPlayer.
+
+General requirements:
+- The app must have a visible launcher icon and appear in the Android TV home screen app list.
+- It must NOT run as a hidden background service. It must be a normal, user-facing app with Activities and UI.
+- The app must be installable as a standalone APK and usable without rebuilding.
+
+Main playback screen:
+- Use a fullscreen PlayerView optimized for Android TV / Firestick remote navigation (DPAD focusable).
+- Show a time info row under the video with:
+  • Elapsed time
+  • Remaining time
+  • Total duration
+  • Current wall-clock time ("Now")
+  • Estimated end time ("Ends at") = system time + (remainingDuration / currentPlaybackSpeed)
+- Update all values every second while playing.
+- Recalculate "Ends at" immediately when playback speed changes.
+- Format all times as hh:mm:ss with AM/PM for clarity on TV.
+- Text must be large, readable, and styled for TV.
+
+Skip logic:
+- Fetch JSON markers from a remote API in this format:
+  { "intro": { "start": 0, "end": 90 }, "credits": { "start": 2500, "end": 2700 } }
+- On playback start, if intro markers exist, auto-seek past intro.
+- Show a "Skip Intro" button during the intro range; tapping it seeks to introEnd.
+- Show a "Skip Credits" button when credits start; tapping it seeks to end.
+- Hide both buttons outside their active ranges.
+- Buttons must be DPAD focusable and remote-clickable.
+
+Settings menu:
+- Accessible from the launcher and via the remote menu button during playback.
+- Must include editable fields for:
+  • Trakt API key
+  • TMDB API key
+- Must include toggles for:
+  • Enable/disable skip-intro/credits feature
+  • Default playback speed
+- All settings must be stored in SharedPreferences and persist across launches.
+- Provide a clean, TV-friendly UI with large text and focusable controls.
+
+Integration:
+- The app must accept video URLs via Android Intent so it can be set as an external player for apps like Stremio or Syncler+.
+- When launched via Intent, it should immediately start playback of the provided URL with all features active.
+
+Project structure:
+- Output a complete Android Studio project with:
+  • AndroidManifest.xml including INTERNET permission, LEANBACK launcher intent filter, and SYSTEM_ALERT_WINDOW if needed.
+  • MainActivity hosting the PlayerView and time info row.
+  • SettingsActivity with editable fields and toggles.
+  • Layout XMLs for both activities, optimized for TV readability.
+  • Strings in res/values/strings.xml for all labels and buttons.
+  • Proper resource IDs for all UI elements.
+- Code must be Kotlin-based, using ExoPlayer APIs.
+
+Deliverables:
+- Provide the full Android Studio project with all source files, layouts, and resources.
+- Ensure the app builds cleanly with Gradle and runs on Android TV without modification.
