@@ -11,15 +11,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        java: [17, 21]
+        api-level: [33, 34]   # Example: Android 13 & 14
+      fail-fast: false
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: ${{ matrix.java }}
 
       - name: Cache Gradle dependencies
         uses: actions/cache@v4
@@ -27,23 +33,17 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          key: ${{ runner.os }}-gradle-${{ matrix.java }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-${{ matrix.java }}-
 
       - name: Cache Android build cache
         uses: actions/cache@v4
         with:
           path: ~/.android/build-cache
-          key: ${{ runner.os }}-android-build-${{ github.sha }}
+          key: ${{ runner.os }}-android-build-${{ matrix.api-level }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
-            ${{ runner.os }}-android-build-
-
-      - name: Grant execute permission to Gradle wrapper
-        run: chmod +x ./gradlew
-
-      - name: Run Gradle build with warnings
-        run: ./gradlew clean build --warning-mode all
+            ${{ runner.os }}-android-build-${{ matrix.api-level }}-
 
       - name: Fix Gradle wrapper
         run: |
@@ -52,11 +52,14 @@ jobs:
           chmod +x gradlew
           test -f gradle/wrapper/gradle-wrapper.jar || { echo "gradle-wrapper.jar missing"; exit 1; }
 
+      - name: Run Gradle build with warnings
+        run: ./gradlew clean build --warning-mode all
+
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug-apk
+          name: app-debug-apk-java${{ matrix.java }}-api${{ matrix.api-level }}
           path: app/build/outputs/apk/debug/app-debug.apk
