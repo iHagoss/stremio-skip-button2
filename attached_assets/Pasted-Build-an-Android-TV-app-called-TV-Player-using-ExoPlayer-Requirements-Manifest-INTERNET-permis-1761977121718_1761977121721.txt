@@ -1,0 +1,30 @@
+Build an Android TV app called "TV Player" using ExoPlayer.
+Requirements:
+
+Manifest: INTERNET permission, LEANBACK launcher, SYSTEMALERTWINDOW.
+Layout: Fullscreen PlayerView with three hidden buttons: "Skip Recap" "Skip Intro " and "Skip Credits"
+The following should be Manually entered Manual Skip Editor activity that the user easily access through a settings UI inside the player - the manual actions should be treated as an automatic fallback for when other logic fails - so the player should be smart enough to remember the user settings without needing to be reconfigured upon shut-downs and restarts 
+Logic: Fetch JSON from a remote API in this format:
+{ "recap": { "start": 0, "end": 90 }, "intro": { "start": 90, "end": 180 }, "credits": { "start": 2500, "end": 2700 } }
+When playback starts, auto-seek past intro if markers exist.
+Show "Skip Recap" button during recap range; tapping it seeks to recapEnd.
+Show "Skip Intro" button during intro range; tapping it seeks to introEnd.
+Show "Skip Credits" button when credits start; tapping it seeks to end.
+It should then automatically begin to load up the next episode in the season without user input. 
+Optimize UI for Firestick/Android TV remote navigation..
+
+Its first attempts before falling back to the manual logic - it should attempt to use smart logic by scraping community driven information from known sources for known kodi intro skipping addons and stremio streaming addons, emby, plex, jellyfin, Netflix and anything you can find.
+
+It should also have a menu in the settings ui for a user to optionally enter their API for Trakt, TMDB, TVDB do the app can scrape Metadata to try and apply smart logic.
+
+Another form of smart logic it can use is the ability to scan episodes beginning and end parts of audio files to try and determine start and stop points
+
+In my Android TV app using ExoPlayer, implement advanced time display logic
+:
+- Show elapsed time, remaining time, and total duration as TextViews under the player.
+- Also display the current wall‑clock time ("Now") and the estimated end time ("Ends at").
+- End time = current system time + (remainingDuration / currentPlaybackSpeed).
+- If playback speed changes, recalculate the end time immediately.
+- Update all values every second while playing.
+- Format times as hh:mm:ss with AM/PM for clarity on TV.
+- Ensure text is large and readable on Android TV / Firestick.
